@@ -29,6 +29,9 @@ yarn-error.log*
 # Turbo
 .turbo/
 
+# Vite
+.vite/
+
 # IDE
 .vscode/
 .idea/
