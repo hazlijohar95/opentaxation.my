@@ -1,0 +1,35 @@
+{
+  "name": "malaysia-tax-decision-engine",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "@sentry/react": "^10.28.0",
+    "@sentry/vite-plugin": "^4.6.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "jsdom": "^27.2.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.3",
+    "vitest": "^4.0.15"
+  },
+  "packageManager": "npm@10.0.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "framer-motion": "^12.23.25",
+    "phosphor-react": "^1.4.1"
+  }
+}
