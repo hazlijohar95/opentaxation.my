@@ -38,7 +38,7 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
       <div className="h-full flex flex-col">
         {/* Sticky header - iOS native style */}
         <header className="sticky top-0 z-40 bg-gradient-to-br from-muted/80 via-muted/70 to-background/80 backdrop-blur-xl border-b border-border/30 supports-[backdrop-filter]:from-muted/60 supports-[backdrop-filter]:via-muted/50 lg:bg-transparent lg:backdrop-blur-none lg:border-0">
-          <div className="px-4 sm:px-5 lg:px-8 py-3 sm:py-4 lg:py-6">
+          <div className="px-5 sm:px-5 lg:px-8 py-4 sm:py-4 lg:py-6">
             <h2 className="font-display text-lg sm:text-xl lg:text-3xl font-bold tracking-tight" id="results-heading">
               Your Results
             </h2>
@@ -60,9 +60,9 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
               aria-live="polite"
               aria-atomic="true"
             >
-              <div className="px-4 sm:px-5 lg:px-8 py-4 sm:py-5 lg:py-6 space-y-4 pb-safe">
+              <div className="px-5 sm:px-5 lg:px-8 py-5 sm:py-5 lg:py-6 space-y-4 pb-safe">
                 {/* Comparison Cards - Stack on mobile, side by side on larger */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4">
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -139,7 +139,7 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.35 }}
-                  className="flex justify-center gap-2.5 sm:gap-3 pt-2 pb-4"
+                  className="flex justify-center gap-3 sm:gap-3 pt-4 pb-6"
                 >
                   {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
                   {/* @ts-ignore - PDFDownloadLink children type definition doesn't properly support render props */}
@@ -152,7 +152,7 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
                     {({ loading }: { loading?: boolean }) => (
                       <button
                         disabled={loading}
-                        className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 h-11 sm:h-10 bg-background border border-border/60 text-xs sm:text-sm hover:bg-muted/50 active:scale-[0.98] transition-all duration-200 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-sm"
+                        className="inline-flex items-center justify-center gap-2 px-5 sm:px-5 h-12 sm:h-11 bg-background border border-border/60 text-xs sm:text-sm hover:bg-muted/50 active:scale-[0.98] transition-all duration-200 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-sm min-h-[48px]"
                       >
                         <Download weight="duotone" className="h-4 w-4" />
                         <span>{loading ? 'Generating...' : 'Download PDF'}</span>
@@ -162,7 +162,7 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
                   {onShareClick && (
                     <button
                       onClick={handleShare}
-                      className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 h-11 sm:h-10 bg-background border border-border/60 text-xs sm:text-sm hover:bg-muted/50 active:scale-[0.98] transition-all duration-200 rounded-xl font-medium shadow-sm"
+                      className="inline-flex items-center justify-center gap-2 px-5 sm:px-5 h-12 sm:h-11 bg-background border border-border/60 text-xs sm:text-sm hover:bg-muted/50 active:scale-[0.98] transition-all duration-200 rounded-xl font-medium shadow-sm min-h-[48px]"
                     >
                       {copied ? (
                         <>

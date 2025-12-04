@@ -34,12 +34,12 @@ export default function LandingSection({ onStart }: LandingSectionProps) {
             <Logo size="md" className="flex-shrink-0" />
 
             {/* Tab Navigation - Pill style */}
-            <nav className="flex items-center gap-0.5 bg-muted/50 p-1.5 rounded-full border border-border/30" role="tablist">
+            <nav className="flex items-center gap-1 bg-muted/50 p-1.5 rounded-full border border-border/30" role="tablist">
               <button
                 role="tab"
                 aria-selected={activeTab === 'calculator'}
                 onClick={() => setActiveTab('calculator')}
-                className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-sm font-medium transition-all duration-500 min-h-[40px] ${
+                className={`flex items-center justify-center gap-1.5 px-4 sm:px-4 py-2.5 sm:py-2.5 rounded-full text-sm font-medium transition-all duration-500 min-h-[44px] ${
                   activeTab === 'calculator'
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-[var(--blue)] active:scale-95'
@@ -55,7 +55,7 @@ export default function LandingSection({ onStart }: LandingSectionProps) {
                 role="tab"
                 aria-selected={activeTab === 'calendar'}
                 onClick={() => setActiveTab('calendar')}
-                className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-sm font-medium transition-all duration-500 min-h-[40px] ${
+                className={`flex items-center justify-center gap-1.5 px-4 sm:px-4 py-2.5 sm:py-2.5 rounded-full text-sm font-medium transition-all duration-500 min-h-[44px] ${
                   activeTab === 'calendar'
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-[var(--blue)] active:scale-95'

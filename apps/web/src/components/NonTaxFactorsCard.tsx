@@ -222,7 +222,7 @@ export default function NonTaxFactorsCard() {
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04, duration: 0.2 }}
-                className="bg-muted/30 rounded-lg p-3 space-y-2"
+                className="bg-muted/30 rounded-lg p-4 space-y-3"
               >
                 {/* Factor Header */}
                 <div className="flex items-center gap-2">
@@ -231,7 +231,7 @@ export default function NonTaxFactorsCard() {
                 </div>
 
                 {/* Values Grid */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Enterprise</div>
                     <div className="flex items-start gap-1.5">

@@ -122,7 +122,7 @@ function CollapsibleSection({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors"
+        className="w-full flex items-center justify-between p-4 min-h-[52px] hover:bg-muted/30 transition-colors"
       >
         <span className="text-sm font-semibold">{title}</span>
         {isOpen ? (
@@ -140,7 +140,7 @@ function CollapsibleSection({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 space-y-4">{children}</div>
+            <div className="px-4 pb-5 space-y-4">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -235,7 +235,7 @@ function InputsSection({
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-          <div className="px-4 sm:px-5 lg:px-8 py-4 sm:py-5 lg:py-6 space-y-5 pb-safe">
+          <div className="px-5 sm:px-5 lg:px-8 py-5 sm:py-5 lg:py-6 space-y-5 pb-safe">
 
             {/* Step 1: How do you want to calculate? */}
             <motion.div
@@ -244,7 +244,7 @@ function InputsSection({
               transition={{ delay: 0.05, duration: 0.35 }}
             >
               <Card className="border-border/50 shadow-sm overflow-hidden">
-                <CardContent className="p-4 sm:p-5 space-y-4">
+                <CardContent className="p-5 sm:p-5 space-y-4">
                   <SectionHeader
                     title="How do you want to calculate?"
                     subtitle="Choose your starting point"
@@ -253,30 +253,30 @@ function InputsSection({
 
                   {/* Input Mode Toggle */}
                   {onInputModeChange && (
-                    <div className="flex gap-1.5 p-1 bg-muted/50 rounded-xl">
+                    <div className="flex gap-2 p-1.5 bg-muted/50 rounded-xl">
                       <button
                         type="button"
                         onClick={() => onInputModeChange('profit')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-lg text-[13px] sm:text-sm font-medium transition-all duration-200 min-h-[52px] ${
                           inputMode === 'profit'
                             ? 'bg-background text-foreground shadow-sm'
                             : 'text-muted-foreground hover:text-foreground active:scale-[0.98]'
                         }`}
                       >
-                        <Calculator weight={inputMode === 'profit' ? 'fill' : 'regular'} className="h-4 w-4" />
-                        <span>I know my profit</span>
+                        <Calculator weight={inputMode === 'profit' ? 'fill' : 'regular'} className="h-4 w-4 flex-shrink-0" />
+                        <span className="whitespace-nowrap">I know my profit</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => onInputModeChange('target')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-lg text-[13px] sm:text-sm font-medium transition-all duration-200 min-h-[52px] ${
                           inputMode === 'target'
                             ? 'bg-background text-foreground shadow-sm'
                             : 'text-muted-foreground hover:text-foreground active:scale-[0.98]'
                         }`}
                       >
-                        <Target weight={inputMode === 'target' ? 'fill' : 'regular'} className="h-4 w-4" />
-                        <span>Target take-home</span>
+                        <Target weight={inputMode === 'target' ? 'fill' : 'regular'} className="h-4 w-4 flex-shrink-0" />
+                        <span className="whitespace-nowrap">Target take-home</span>
                       </button>
                     </div>
                   )}
@@ -358,7 +358,7 @@ function InputsSection({
               transition={{ delay: 0.1, duration: 0.35 }}
             >
               <Card className="border-border/50 shadow-sm overflow-hidden">
-                <CardContent className="p-4 sm:p-5 space-y-4">
+                <CardContent className="p-5 sm:p-5 space-y-4">
                   <SectionHeader
                     title="If you go Sdn Bhd..."
                     subtitle="These settings affect your Sdn Bhd calculation"
@@ -463,14 +463,14 @@ function InputsSection({
               transition={{ delay: 0.15, duration: 0.35 }}
             >
               <Card className="border-border/50 shadow-sm overflow-hidden">
-                <CardContent className="p-4 sm:p-5 space-y-4">
+                <CardContent className="p-5 sm:p-5 space-y-4">
                   <SectionHeader
                     title="Do you need an audit?"
                     subtitle="Small companies can be exempt"
                     tip="You're exempt from audit if you meet ALL three criteria: Revenue ≤ RM100k, Assets ≤ RM300k, and Employees ≤ 5. This saves RM3-8k/year."
                   />
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <InputField
                       label="Revenue"
                       value={inputs.auditCriteria?.revenue || 100000}
@@ -564,7 +564,7 @@ function InputsSection({
                 transition={{ delay: 0.25, duration: 0.35 }}
               >
                 <Card className="border-border/50 shadow-sm overflow-hidden">
-                  <CardContent className="p-4 sm:p-5 space-y-4">
+                  <CardContent className="p-5 sm:p-5 space-y-4">
                     <SectionHeader
                       title="Zakat"
                       subtitle="Islamic wealth tax for eligible Muslims"
@@ -607,7 +607,7 @@ function InputsSection({
                             className="space-y-4 overflow-hidden"
                           >
                             {/* Auto-calculate or manual entry */}
-                            <div className="flex gap-1.5 p-1 bg-muted/50 rounded-xl">
+                            <div className="flex gap-2 p-1.5 bg-muted/50 rounded-xl">
                               <button
                                 type="button"
                                 onClick={() => onZakatChange({
@@ -615,7 +615,7 @@ function InputsSection({
                                   autoCalculate: true,
                                   amountPaid: undefined,
                                 })}
-                                className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                className={`flex-1 py-3.5 px-4 rounded-lg text-[13px] sm:text-sm font-medium transition-all duration-200 min-h-[52px] ${
                                   zakatAutoCalculate
                                     ? 'bg-background text-foreground shadow-sm'
                                     : 'text-muted-foreground hover:text-foreground'
@@ -630,7 +630,7 @@ function InputsSection({
                                   autoCalculate: false,
                                   amountPaid: inputs.zakat?.amountPaid || estimatedZakat,
                                 })}
-                                className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                className={`flex-1 py-3.5 px-4 rounded-lg text-[13px] sm:text-sm font-medium transition-all duration-200 min-h-[52px] ${
                                   !zakatAutoCalculate
                                     ? 'bg-background text-foreground shadow-sm'
                                     : 'text-muted-foreground hover:text-foreground'

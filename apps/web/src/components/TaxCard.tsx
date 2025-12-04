@@ -124,7 +124,7 @@ function TaxCard({
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="w-full flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground"
+                  className="w-full flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground min-h-[44px]"
                 >
                   {isExpanded ? (
                     <>

@@ -34,7 +34,7 @@ export default function ReliefsSection({ reliefs, onChange }: ReliefsSectionProp
             variant="ghost"
             size="sm"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="h-8"
+            className="h-10 min-w-[44px] min-h-[44px]"
           >
             {isExpanded ? <CaretUp weight="duotone" className="h-4 w-4" /> : <CaretDown weight="duotone" className="h-4 w-4" />}
           </Button>

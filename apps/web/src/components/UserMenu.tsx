@@ -67,7 +67,7 @@ export function UserMenu() {
           <div className="p-2">
             <Button
               variant="ghost"
-              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 min-h-[44px]"
               onClick={async () => {
                 await signOut();
                 setIsOpen(false);

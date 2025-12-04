@@ -54,7 +54,7 @@ export default function WaterfallBreakdown({ steps, title, className }: Waterfal
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: index * 0.03, duration: 0.2 }}
           className={cn(
-            'flex justify-between items-center py-1.5 px-2 rounded-md transition-colors duration-150',
+            'flex justify-between items-center py-2.5 px-3 rounded-md transition-colors duration-150 min-h-[44px]',
             step.indent && 'ml-4',
             step.highlight && 'bg-foreground/5 border border-foreground/10',
             step.type === 'equals' && 'border-t border-border/50 pt-2 mt-1',

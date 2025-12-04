@@ -503,4 +503,26 @@
       background-color: hsl(var(--muted));
     }
   }
+
+  /* Mobile-first spacing utilities */
+  .mobile-pad {
+    @apply px-5 sm:px-6 lg:px-8;
+  }
+
+  .mobile-card-pad {
+    @apply p-5 sm:p-6;
+  }
+
+  /* Consistent touch target sizing */
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  @media (max-width: 640px) {
+    .tap-target {
+      min-height: 48px;
+      min-width: 48px;
+    }
+  }
 }
