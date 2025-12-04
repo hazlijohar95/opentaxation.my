@@ -151,7 +151,7 @@ Get your key from [Clerk Dashboard](https://dashboard.clerk.com).
 
 ### Production
 
-Set these in your hosting platform (Vercel, Netlify, etc.):
+Set these in your hosting platform:
 - `VITE_CLERK_PUBLISHABLE_KEY` - Your production Clerk key (starts with `pk_live_`)
 
 ## Development Server

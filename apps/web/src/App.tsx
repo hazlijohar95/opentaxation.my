@@ -2,6 +2,7 @@ import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { TooltipProvider } from './components/ui/tooltip';
+import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import SinglePageApp from './pages/SinglePageApp';
 import { trackPageView } from './lib/analytics';
 
@@ -59,6 +60,7 @@ function App() {
     <ErrorBoundary>
       <TooltipProvider>
         <AppRoutes />
+        <PWAInstallPrompt />
       </TooltipProvider>
     </ErrorBoundary>
   );
