@@ -58,24 +58,6 @@ export function useLocalStorage<T>(
 }
 
 /**
- * Storage key constants for tax calculator inputs
- */
-export const STORAGE_KEYS = {
-  BUSINESS_PROFIT: 'taxCalc_businessProfit',
-  OTHER_INCOME: 'taxCalc_otherIncome',
-  MONTHLY_SALARY: 'taxCalc_monthlySalary',
-  COMPLIANCE_COSTS: 'taxCalc_complianceCosts',
-  AUDIT_REVENUE: 'taxCalc_auditRevenue',
-  AUDIT_ASSETS: 'taxCalc_auditAssets',
-  AUDIT_EMPLOYEES: 'taxCalc_auditEmployees',
-  AUDIT_COST: 'taxCalc_auditCost',
-  RELIEFS: 'taxCalc_reliefs',
-  APPLY_DIVIDEND_SURCHARGE: 'taxCalc_applyDividendSurcharge',
-  DIVIDEND_DISTRIBUTION_PERCENT: 'taxCalc_dividendDistributionPercent',
-  FOREIGN_OWNERSHIP: 'taxCalc_foreignOwnership',
-} as const;
-
-/**
  * Combined storage interface for all inputs
  */
 export interface StoredInputs {

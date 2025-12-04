@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSupabase } from './useSupabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import type { SavedCalculation, CalculationInputs, CalculationResults, Json } from '@/types/database';
 import { parseSavedCalculations, parseSavedCalculation } from '@/types/database';
 
 export function useSavedCalculations() {
   const { user } = useAuth();
-  const { supabase, isConfigured, isAuthenticated } = useSupabase();
+  const isConfigured = isSupabaseConfigured;
+  const isAuthenticated = Boolean(user);
   const [calculations, setCalculations] = useState<SavedCalculation[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);

@@ -1,8 +1,9 @@
-import React, { useState, memo } from 'react';
+import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkle, Download, ShareNetwork, Check } from 'phosphor-react';
+import { Sparkle, Download, ShareNetwork } from 'phosphor-react';
 import TaxCard from '../TaxCard';
 import RecommendationCard from '../RecommendationCard';
+import WhatsNextCTA from '../WhatsNextCTA';
 import CrossoverChart from '../CrossoverChart';
 import NonTaxFactorsCard from '../NonTaxFactorsCard';
 import { PDFDownloadLink } from '@react-pdf/renderer';
@@ -12,21 +13,12 @@ import type { ComparisonResult, TaxCalculationInputs } from '@tax-engine/core';
 interface ResultsSectionProps {
   comparison: ComparisonResult | null;
   inputs: TaxCalculationInputs;
-  onShareClick?: () => Promise<boolean>;
+  onShareClick?: () => void;
+  /** Hide header for mobile tab layout (header is in MobileHeader instead) */
+  hideHeader?: boolean;
 }
 
-function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleShare = async () => {
-    if (onShareClick) {
-      const success = await onShareClick();
-      if (success) {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      }
-    }
-  };
+function ResultsSection({ comparison, inputs, onShareClick, hideHeader = false }: ResultsSectionProps) {
 
   return (
     <motion.div
@@ -36,15 +28,17 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
       className="flex-1 overflow-hidden bg-gradient-to-br from-muted/30 via-muted/20 to-background"
     >
       <div className="h-full flex flex-col">
-        {/* Sticky header - iOS native style */}
-        <header className="sticky top-0 z-40 bg-gradient-to-br from-muted/80 via-muted/70 to-background/80 backdrop-blur-xl border-b border-border/30 supports-[backdrop-filter]:from-muted/60 supports-[backdrop-filter]:via-muted/50 lg:bg-transparent lg:backdrop-blur-none lg:border-0">
-          <div className="px-5 sm:px-5 lg:px-8 py-4 sm:py-4 lg:py-6">
-            <h2 className="font-display text-lg sm:text-xl lg:text-3xl font-bold tracking-tight" id="results-heading">
-              Your Results
-            </h2>
-            <p className="text-xs text-muted-foreground">Enterprise vs Sdn Bhd comparison</p>
-          </div>
-        </header>
+        {/* Sticky header - iOS native style - hidden when using MobileTabLayout */}
+        {!hideHeader && (
+          <header className="sticky top-0 z-40 bg-gradient-to-br from-muted/80 via-muted/70 to-background/80 backdrop-blur-xl border-b border-border/30 supports-[backdrop-filter]:from-muted/60 supports-[backdrop-filter]:via-muted/50 lg:bg-transparent lg:backdrop-blur-none lg:border-0">
+            <div className="px-5 sm:px-5 lg:px-8 py-4 sm:py-4 lg:py-6">
+              <h2 className="font-display text-lg sm:text-xl lg:text-3xl font-bold tracking-tight" id="results-heading">
+                Your Results
+              </h2>
+              <p className="text-xs text-muted-foreground">Enterprise vs Sdn Bhd comparison</p>
+            </div>
+          </header>
+        )}
 
         <AnimatePresence mode="wait">
           {comparison ? (
@@ -77,6 +71,7 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
                       insights={comparison.solePropResult.insights}
                       taxBracketBreakdown={comparison.solePropResult.taxBracketBreakdown}
                       taxableIncome={comparison.solePropResult.breakdown.taxableIncome}
+                      zakat={comparison.solePropResult.zakat}
                     />
                   </motion.div>
                   <motion.div
@@ -103,6 +98,7 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
                       personalTaxBracketBreakdown={comparison.sdnBhdResult.personalTaxBracketBreakdown}
                       companyTaxableProfit={comparison.sdnBhdResult.breakdown.companyTaxableProfit}
                       personalTaxableIncome={comparison.sdnBhdResult.breakdown.annualSalary}
+                      zakat={comparison.sdnBhdResult.zakat}
                     />
                   </motion.div>
                 </div>
@@ -114,6 +110,15 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
                   transition={{ delay: 0.15, duration: 0.35 }}
                 >
                   <RecommendationCard comparison={comparison} />
+                </motion.div>
+
+                {/* What's Next CTA - shows only when Sdn Bhd is recommended */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.18, duration: 0.35 }}
+                >
+                  <WhatsNextCTA comparison={comparison} />
                 </motion.div>
 
                 {/* Crossover Chart */}
@@ -161,20 +166,11 @@ function ResultsSection({ comparison, inputs, onShareClick }: ResultsSectionProp
                   </PDFDownloadLink>
                   {onShareClick && (
                     <button
-                      onClick={handleShare}
+                      onClick={onShareClick}
                       className="inline-flex items-center justify-center gap-2 px-5 sm:px-5 h-12 sm:h-11 bg-background border border-border/60 text-xs sm:text-sm hover:bg-muted/50 active:scale-[0.98] transition-all duration-200 rounded-xl font-medium shadow-sm min-h-[48px]"
                     >
-                      {copied ? (
-                        <>
-                          <Check weight="bold" className="h-4 w-4 text-green-500" />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <ShareNetwork weight="duotone" className="h-4 w-4" />
-                          <span>Share</span>
-                        </>
-                      )}
+                      <ShareNetwork weight="duotone" className="h-4 w-4" />
+                      <span>Share</span>
                     </button>
                   )}
                 </motion.div>

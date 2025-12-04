@@ -16,6 +16,7 @@ const DashboardOverview = lazy(() => import('./pages/dashboard/DashboardOverview
 const DashboardCalendar = lazy(() => import('./pages/dashboard/DashboardCalendar'));
 const SavedCalculations = lazy(() => import('./pages/dashboard/SavedCalculations'));
 const DashboardSettings = lazy(() => import('./pages/dashboard/DashboardSettings'));
+const PartnersPage = lazy(() => import('./pages/PartnersPage'));
 
 // Loading fallback for lazy routes
 function RouteLoading() {
@@ -42,6 +43,7 @@ function AppRoutes() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
+        <Route path="/partners" element={<PartnersPage />} />
 
         {/* Dashboard routes (protected) */}
         <Route path="/dashboard" element={<DashboardLayout />}>

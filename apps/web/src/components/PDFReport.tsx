@@ -1,10 +1,10 @@
 import {
-      Document,
-      Page,
-      Text,
-      View,
-      StyleSheet,
-    } from '@react-pdf/renderer';
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+} from '@react-pdf/renderer';
 import type { TaxCalculationInputs, ComparisonResult, WaterfallStep, TaxBracketBreakdown } from '@tax-engine/core';
 
 interface PDFReportProps {
@@ -12,286 +12,587 @@ interface PDFReportProps {
   comparison: ComparisonResult;
 }
 
+// Elegant color palette
+const colors = {
+  primary: '#0f172a',      // Slate 900
+  secondary: '#475569',    // Slate 600
+  muted: '#94a3b8',        // Slate 400
+  accent: '#0ea5e9',       // Sky 500
+  success: '#059669',      // Emerald 600
+  warning: '#d97706',      // Amber 600
+  danger: '#dc2626',       // Red 600
+  background: '#f8fafc',   // Slate 50
+  border: '#e2e8f0',       // Slate 200
+  white: '#ffffff',
+};
+
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 0,
     fontSize: 10,
     fontFamily: 'Helvetica',
+    backgroundColor: colors.white,
   },
-  title: {
-    fontSize: 24,
+  // Header section
+  header: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 40,
+    paddingTop: 40,
+    paddingBottom: 30,
+  },
+  headerTitle: {
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#0ea5e9',
+    color: colors.white,
+    letterSpacing: -0.5,
   },
+  headerSubtitle: {
+    fontSize: 12,
+    color: colors.muted,
+    marginTop: 6,
+    letterSpacing: 0.3,
+  },
+  headerBadge: {
+    marginTop: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 4,
+    alignSelf: 'flex-start',
+  },
+  headerBadgeText: {
+    fontSize: 9,
+    color: colors.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  // Content wrapper
+  content: {
+    padding: 40,
+  },
+  // Summary cards section
+  summaryRow: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 30,
+  },
+  summaryCard: {
+    flex: 1,
+    backgroundColor: colors.background,
+    borderRadius: 8,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  summaryCardHighlight: {
+    flex: 1,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    padding: 20,
+  },
+  summaryCardLabel: {
+    fontSize: 10,
+    color: colors.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  summaryCardLabelLight: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.6)',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  summaryCardValue: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  summaryCardValueLight: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colors.white,
+  },
+  summaryCardSubtext: {
+    fontSize: 9,
+    color: colors.secondary,
+    marginTop: 4,
+  },
+  summaryCardSubtextLight: {
+    fontSize: 9,
+    color: 'rgba(255,255,255,0.6)',
+    marginTop: 4,
+  },
+  // Section styles
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.primary,
+    paddingBottom: 8,
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#1f2937',
+    color: colors.primary,
+    letterSpacing: -0.3,
   },
-  row: {
+  sectionBadge: {
+    marginLeft: 10,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    backgroundColor: colors.background,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sectionBadgeText: {
+    fontSize: 8,
+    color: colors.secondary,
+  },
+  // Input summary
+  inputGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 5,
-    paddingVertical: 3,
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 20,
   },
-  label: {
-    color: '#6b7280',
+  inputItem: {
+    width: '48%',
+    backgroundColor: colors.background,
+    padding: 12,
+    borderRadius: 6,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.accent,
   },
-  value: {
-    fontWeight: 'bold',
-    color: '#111827',
+  inputLabel: {
+    fontSize: 9,
+    color: colors.muted,
+    marginBottom: 4,
   },
-  table: {
-    marginTop: 10,
-  },
-  tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#f3f4f6',
-    padding: 8,
-    fontWeight: 'bold',
-  },
-  tableRow: {
-    flexDirection: 'row',
-    padding: 8,
-    borderBottom: '1px solid #e5e7eb',
-  },
-  tableCell: {
-    flex: 1,
-  },
-  recommendation: {
-    backgroundColor: '#f0f9ff',
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  recommendationText: {
+  inputValue: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#0369a1',
-    marginBottom: 5,
+    color: colors.primary,
   },
-  warning: {
-    backgroundColor: '#fffbeb',
+  // Comparison table
+  comparisonTable: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  comparisonHeader: {
+    flexDirection: 'row',
+    backgroundColor: colors.primary,
     padding: 12,
-    borderRadius: 5,
-    marginTop: 10,
-    borderLeft: '3px solid #f59e0b',
   },
-  warningText: {
-    fontSize: 9,
-    color: '#92400e',
-  },
-  nonTaxTable: {
-    marginTop: 10,
-  },
-  nonTaxHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#f3f4f6',
-    padding: 6,
-    fontWeight: 'bold',
-    fontSize: 9,
-  },
-  nonTaxRow: {
-    flexDirection: 'row',
-    padding: 6,
-    borderBottom: '1px solid #e5e7eb',
-    fontSize: 9,
-  },
-  nonTaxCellFactor: {
+  comparisonHeaderCell: {
     flex: 1,
-    fontWeight: 'bold',
-  },
-  nonTaxCellValue: {
-    flex: 1.5,
-  },
-  footer: {
-    marginTop: 30,
-    paddingTop: 10,
-    borderTop: '1px solid #e5e7eb',
-    fontSize: 8,
-    color: '#6b7280',
-    fontStyle: 'italic',
-  },
-  waterfallSection: {
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  waterfallTitle: {
     fontSize: 10,
     fontWeight: 'bold',
-    marginBottom: 6,
-    color: '#4b5563',
-    textTransform: 'uppercase',
+    color: colors.white,
+    textAlign: 'center',
+  },
+  comparisonHeaderCellFirst: {
+    flex: 1.5,
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: colors.white,
+    textAlign: 'left',
+  },
+  comparisonRow: {
+    flexDirection: 'row',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  comparisonRowAlt: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  comparisonRowHighlight: {
+    flexDirection: 'row',
+    padding: 12,
+    backgroundColor: '#f0f9ff',
+  },
+  comparisonCellLabel: {
+    flex: 1.5,
+    fontSize: 10,
+    color: colors.secondary,
+  },
+  comparisonCellLabelBold: {
+    flex: 1.5,
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  comparisonCellValue: {
+    flex: 1,
+    fontSize: 10,
+    color: colors.primary,
+    textAlign: 'right',
+  },
+  comparisonCellValueBold: {
+    flex: 1,
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: colors.primary,
+    textAlign: 'right',
+  },
+  comparisonCellValueSuccess: {
+    flex: 1,
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: colors.success,
+    textAlign: 'right',
+  },
+  // Waterfall section
+  waterfallSection: {
+    marginBottom: 16,
+    backgroundColor: colors.background,
+    borderRadius: 8,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  waterfallTitle: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: colors.primary,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   waterfallRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 3,
-    paddingHorizontal: 4,
+    paddingVertical: 4,
   },
   waterfallRowIndent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 3,
-    paddingHorizontal: 4,
-    marginLeft: 12,
+    paddingVertical: 4,
+    paddingLeft: 16,
   },
   waterfallRowEquals: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 3,
-    paddingHorizontal: 4,
-    borderTop: '1px solid #e5e7eb',
-    marginTop: 2,
+    paddingVertical: 6,
+    marginTop: 4,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
   },
   waterfallRowTotal: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 4,
-    paddingHorizontal: 4,
-    borderTop: '2px solid #d1d5db',
-    marginTop: 4,
-    backgroundColor: '#f9fafb',
+    paddingVertical: 8,
+    marginTop: 6,
+    borderTopWidth: 2,
+    borderTopColor: colors.primary,
+    backgroundColor: colors.white,
+    marginHorizontal: -16,
+    paddingHorizontal: 16,
+    marginBottom: -16,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
   },
   waterfallLabel: {
     fontSize: 9,
-    color: '#6b7280',
+    color: colors.secondary,
   },
   waterfallLabelBold: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: 'bold',
-    color: '#111827',
+    color: colors.primary,
   },
   waterfallValueAdd: {
     fontSize: 9,
-    color: '#059669',
+    color: colors.success,
+    fontWeight: 'bold',
   },
   waterfallValueSubtract: {
     fontSize: 9,
-    color: '#dc2626',
+    color: colors.danger,
   },
   waterfallValueNeutral: {
     fontSize: 9,
-    color: '#6b7280',
+    color: colors.secondary,
   },
   waterfallValueTotal: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 'bold',
-    color: '#111827',
+    color: colors.primary,
   },
-  insightBox: {
-    marginTop: 8,
-    padding: 8,
-    backgroundColor: '#fef3c7',
-    borderRadius: 4,
-  },
-  insightTitle: {
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: '#92400e',
-    marginBottom: 4,
-  },
-  insightText: {
-    fontSize: 8,
-    color: '#78350f',
-    marginBottom: 2,
-  },
-  // Tax bracket breakdown styles
+  // Tax bracket styles
   bracketSection: {
-    marginTop: 10,
-    marginBottom: 10,
-    backgroundColor: '#f9fafb',
-    padding: 10,
-    borderRadius: 4,
+    marginBottom: 16,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
+  },
+  bracketHeader: {
+    backgroundColor: colors.background,
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   bracketTitle: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#374151',
+    color: colors.primary,
+  },
+  bracketTaxable: {
+    fontSize: 9,
+    color: colors.secondary,
+  },
+  bracketBody: {
+    padding: 12,
   },
   bracketRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 3,
-    borderBottom: '0.5px solid #e5e7eb',
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   bracketRowLast: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 3,
+    paddingVertical: 6,
   },
   bracketLabel: {
-    fontSize: 8,
-    color: '#6b7280',
     flex: 2,
+    fontSize: 9,
+    color: colors.secondary,
   },
   bracketRate: {
-    fontSize: 8,
-    color: '#374151',
+    width: 50,
+    fontSize: 9,
+    color: colors.primary,
     textAlign: 'center',
-    width: 40,
   },
   bracketRateZero: {
-    fontSize: 8,
-    color: '#059669',
+    width: 50,
+    fontSize: 9,
+    color: colors.success,
     textAlign: 'center',
-    width: 40,
   },
   bracketAmount: {
-    fontSize: 8,
-    color: '#111827',
-    textAlign: 'right',
     width: 70,
+    fontSize: 9,
+    color: colors.primary,
+    textAlign: 'right',
   },
   bracketAmountZero: {
-    fontSize: 8,
-    color: '#059669',
-    textAlign: 'right',
     width: 70,
+    fontSize: 9,
+    color: colors.success,
+    textAlign: 'right',
   },
-  bracketTotalRow: {
+  bracketFooter: {
+    backgroundColor: colors.background,
+    padding: 12,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 4,
-    marginTop: 4,
-    borderTop: '1px solid #d1d5db',
   },
   bracketTotalLabel: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: 'bold',
-    color: '#111827',
+    color: colors.primary,
   },
   bracketTotalAmount: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  // Recommendation box
+  recommendationBox: {
+    backgroundColor: '#ecfdf5',
+    borderRadius: 8,
+    padding: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.success,
+    marginBottom: 24,
+  },
+  recommendationLabel: {
+    fontSize: 10,
+    color: colors.success,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  recommendationText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: colors.primary,
+    marginBottom: 8,
+    lineHeight: 1.4,
+  },
+  recommendationSavings: {
+    fontSize: 10,
+    color: colors.secondary,
+  },
+  // Warning box
+  warningBox: {
+    backgroundColor: '#fffbeb',
+    borderRadius: 8,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.warning,
+    marginBottom: 16,
+  },
+  warningTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: colors.warning,
+    marginBottom: 6,
+  },
+  warningText: {
+    fontSize: 9,
+    color: '#92400e',
+    lineHeight: 1.4,
+  },
+  // Insights
+  insightsBox: {
+    backgroundColor: colors.background,
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  insightsTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: colors.primary,
+    marginBottom: 8,
+  },
+  insightItem: {
+    flexDirection: 'row',
+    marginBottom: 4,
+  },
+  insightBullet: {
+    fontSize: 8,
+    color: colors.accent,
+    marginRight: 6,
+    marginTop: 1,
+  },
+  insightText: {
+    fontSize: 9,
+    color: colors.secondary,
+    flex: 1,
+    lineHeight: 1.4,
+  },
+  // Non-tax factors table
+  nonTaxTable: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  nonTaxHeader: {
+    flexDirection: 'row',
+    backgroundColor: colors.primary,
+    padding: 10,
+  },
+  nonTaxHeaderCell: {
+    flex: 1,
     fontSize: 9,
     fontWeight: 'bold',
-    color: '#111827',
-    textAlign: 'right',
-    width: 70,
+    color: colors.white,
   },
-  bracketNote: {
-    fontSize: 7,
-    color: '#9ca3af',
-    marginTop: 6,
-    fontStyle: 'italic',
+  nonTaxHeaderCellFirst: {
+    flex: 0.8,
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: colors.white,
+  },
+  nonTaxRow: {
+    flexDirection: 'row',
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  nonTaxRowAlt: {
+    flexDirection: 'row',
+    padding: 8,
+    backgroundColor: colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  nonTaxCellFactor: {
+    flex: 0.8,
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  nonTaxCellValue: {
+    flex: 1,
+    fontSize: 8,
+    color: colors.secondary,
+    paddingHorizontal: 4,
+  },
+  // Footer
+  footer: {
+    marginTop: 'auto',
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  footerText: {
+    fontSize: 8,
+    color: colors.muted,
+    textAlign: 'center',
+    lineHeight: 1.5,
+  },
+  footerBrand: {
+    fontSize: 9,
+    color: colors.secondary,
+    textAlign: 'center',
+    marginTop: 8,
+    fontWeight: 'bold',
+  },
+  // Two columns for page 2
+  twoColumns: {
+    flexDirection: 'row',
+    gap: 20,
+  },
+  column: {
+    flex: 1,
   },
 });
 
+// Format currency
+function formatCurrency(amount: number): string {
+  return `RM ${Math.abs(amount).toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
+function formatCurrencyPrecise(amount: number): string {
+  return `RM ${Math.abs(amount).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
 // Helper component for waterfall rows
 function WaterfallRow({ step }: { step: WaterfallStep }) {
-  const formatAmount = (amount: number) => {
-    return `RM${Math.abs(amount).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
-
   const getPrefix = (type: WaterfallStep['type']) => {
     switch (type) {
       case 'add': return '+ ';
-      case 'subtract': return '- ';
+      case 'subtract': return '− ';
       default: return '';
     }
   };
@@ -318,7 +619,7 @@ function WaterfallRow({ step }: { step: WaterfallStep }) {
         {step.label}
       </Text>
       <Text style={getValueStyle(step.type)}>
-        {getPrefix(step.type)}{formatAmount(step.amount)}
+        {getPrefix(step.type)}{formatCurrencyPrecise(step.amount)}
       </Text>
     </View>
   );
@@ -340,10 +641,6 @@ function TaxBracketSection({
     return null;
   }
 
-  const formatAmount = (amount: number) => {
-    return `RM${amount.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
-
   const formatBracketLabel = (min: number, max: number | null, isFirst: boolean): string => {
     if (isFirst && min === 0) {
       if (max !== null) {
@@ -351,11 +648,9 @@ function TaxBracketSection({
       }
       return 'All income';
     }
-
     if (max === null) {
       return `Above RM${min.toLocaleString('en-MY')}`;
     }
-
     const bracketSize = max - min;
     return `Next RM${bracketSize.toLocaleString('en-MY')}`;
   };
@@ -364,47 +659,43 @@ function TaxBracketSection({
 
   return (
     <View style={styles.bracketSection}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+      <View style={styles.bracketHeader}>
         <Text style={styles.bracketTitle}>{title}</Text>
         {taxableAmount !== undefined && (
-          <Text style={{ fontSize: 8, color: '#6b7280' }}>
-            Taxable: {formatAmount(taxableAmount)}
+          <Text style={styles.bracketTaxable}>
+            Taxable: {formatCurrency(taxableAmount)}
           </Text>
         )}
       </View>
 
-      {breakdown.map((bracket, idx) => {
-        const isFirst = idx === 0;
-        const isLast = idx === breakdown.length - 1;
-        const label = formatBracketLabel(bracket.bracketMin, bracket.bracketMax, isFirst);
-        const ratePercent = (bracket.rate * 100).toFixed(0);
-        const isZeroRate = bracket.rate === 0;
+      <View style={styles.bracketBody}>
+        {breakdown.map((bracket, idx) => {
+          const isFirst = idx === 0;
+          const isLast = idx === breakdown.length - 1;
+          const label = formatBracketLabel(bracket.bracketMin, bracket.bracketMax, isFirst);
+          const ratePercent = (bracket.rate * 100).toFixed(0);
+          const isZeroRate = bracket.rate === 0;
 
-        return (
-          <View key={idx} style={isLast ? styles.bracketRowLast : styles.bracketRow}>
-            <Text style={styles.bracketLabel}>{label}</Text>
-            <Text style={isZeroRate ? styles.bracketRateZero : styles.bracketRate}>
-              × {ratePercent}%
-            </Text>
-            <Text style={isZeroRate ? styles.bracketAmountZero : styles.bracketAmount}>
-              = {formatAmount(bracket.taxForBracket)}
-            </Text>
-          </View>
-        );
-      })}
+          return (
+            <View key={idx} style={isLast ? styles.bracketRowLast : styles.bracketRow}>
+              <Text style={styles.bracketLabel}>{label}</Text>
+              <Text style={isZeroRate ? styles.bracketRateZero : styles.bracketRate}>
+                × {ratePercent}%
+              </Text>
+              <Text style={isZeroRate ? styles.bracketAmountZero : styles.bracketAmount}>
+                = {formatCurrencyPrecise(bracket.taxForBracket)}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
 
-      <View style={styles.bracketTotalRow}>
+      <View style={styles.bracketFooter}>
         <Text style={styles.bracketTotalLabel}>
           Total {isCorporate ? 'Corporate' : 'Personal'} Tax
         </Text>
-        <Text style={styles.bracketTotalAmount}>{formatAmount(totalTax)}</Text>
+        <Text style={styles.bracketTotalAmount}>{formatCurrencyPrecise(totalTax)}</Text>
       </View>
-
-      <Text style={styles.bracketNote}>
-        {isCorporate
-          ? 'SME rates apply to companies with ≤RM50M revenue and no foreign ownership ≥20%.'
-          : 'Progressive tax: only income within each bracket is taxed at that rate.'}
-      </Text>
     </View>
   );
 }
@@ -412,275 +703,324 @@ function TaxBracketSection({
 export default function PDFReport({ inputs, comparison }: PDFReportProps) {
   const { solePropResult, sdnBhdResult } = comparison;
 
+  const enterpriseTax = solePropResult.personalTax;
+  const sdnBhdTax = sdnBhdResult.corporateTax + sdnBhdResult.personalTax + sdnBhdResult.breakdown.dividendTax;
+  const winner = comparison.difference > 0 ? 'Sdn Bhd' : 'Enterprise';
+  const savings = Math.abs(comparison.difference);
+
+  const nonTaxFactors = [
+    { factor: 'Liability', enterprise: 'Unlimited personal', sdnBhd: 'Limited to capital' },
+    { factor: 'Banking', enterprise: 'Harder to get loans', sdnBhd: 'Banks prefer companies' },
+    { factor: 'Credibility', enterprise: 'Less professional', sdnBhd: 'More client trust' },
+    { factor: 'Funding', enterprise: 'Cannot issue shares', sdnBhd: 'Can raise capital' },
+    { factor: 'Continuity', enterprise: 'Dies with owner', sdnBhd: 'Perpetual existence' },
+    { factor: 'Compliance', enterprise: '~RM60/year', sdnBhd: 'RM3,000-10,000/year' },
+    { factor: 'Setup', enterprise: '~RM60', sdnBhd: '~RM1,000+' },
+  ];
+
   return (
     <Document>
+      {/* Page 1: Summary & Comparison */}
       <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Malaysia Tax Decision Engine</Text>
-        <Text style={{ marginBottom: 20, color: '#6b7280' }}>
-          Enterprise vs Sdn Bhd Comparison Report
-        </Text>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Inputs</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Business Profit:</Text>
-            <Text style={styles.value}>
-              RM{inputs.businessProfit.toLocaleString('en-MY')}
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Tax Comparison Report</Text>
+          <Text style={styles.headerSubtitle}>Enterprise vs Sdn Bhd Analysis</Text>
+          <View style={styles.headerBadge}>
+            <Text style={styles.headerBadgeText}>
+              Generated {new Date().toLocaleDateString('en-MY', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
             </Text>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Other Income:</Text>
-            <Text style={styles.value}>
-              RM{(inputs.otherIncome || 0).toLocaleString('en-MY')}
-            </Text>
-          </View>
-          {inputs.monthlySalary && (
-            <View style={styles.row}>
-              <Text style={styles.label}>Monthly Salary (Sdn Bhd):</Text>
-              <Text style={styles.value}>
-                RM{inputs.monthlySalary.toLocaleString('en-MY')}/month
-              </Text>
-            </View>
-          )}
-          {inputs.complianceCosts && (
-            <View style={styles.row}>
-              <Text style={styles.label}>Compliance Costs:</Text>
-              <Text style={styles.value}>
-                RM{inputs.complianceCosts.toLocaleString('en-MY')}
-              </Text>
-            </View>
-          )}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Enterprise (Sole Prop) Results</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Personal Tax:</Text>
-            <Text style={styles.value}>
-              RM{solePropResult.personalTax.toLocaleString('en-MY', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </Text>
+        {/* Content */}
+        <View style={styles.content}>
+          {/* Summary Cards */}
+          <View style={styles.summaryRow}>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryCardLabel}>Business Profit</Text>
+              <Text style={styles.summaryCardValue}>{formatCurrency(inputs.businessProfit)}</Text>
+              <Text style={styles.summaryCardSubtext}>Annual gross income</Text>
+            </View>
+            <View style={styles.summaryCardHighlight}>
+              <Text style={styles.summaryCardLabelLight}>Recommended</Text>
+              <Text style={styles.summaryCardValueLight}>{winner}</Text>
+              <Text style={styles.summaryCardSubtextLight}>Saves {formatCurrency(savings)}/year</Text>
+            </View>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Net Cash:</Text>
-            <Text style={styles.value}>
-              RM{solePropResult.netCash.toLocaleString('en-MY', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </Text>
+
+          {/* Quick Comparison Table */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Side-by-Side Comparison</Text>
+            </View>
+
+            <View style={styles.comparisonTable}>
+              <View style={styles.comparisonHeader}>
+                <Text style={styles.comparisonHeaderCellFirst}>Metric</Text>
+                <Text style={styles.comparisonHeaderCell}>Enterprise</Text>
+                <Text style={styles.comparisonHeaderCell}>Sdn Bhd</Text>
+              </View>
+
+              <View style={styles.comparisonRow}>
+                <Text style={styles.comparisonCellLabel}>Total Tax</Text>
+                <Text style={styles.comparisonCellValue}>{formatCurrencyPrecise(enterpriseTax)}</Text>
+                <Text style={styles.comparisonCellValue}>{formatCurrencyPrecise(sdnBhdTax)}</Text>
+              </View>
+
+              <View style={styles.comparisonRowAlt}>
+                <Text style={styles.comparisonCellLabel}>Effective Tax Rate</Text>
+                <Text style={styles.comparisonCellValue}>{(solePropResult.effectiveTaxRate * 100).toFixed(1)}%</Text>
+                <Text style={styles.comparisonCellValue}>
+                  {inputs.businessProfit > 0 ? ((sdnBhdTax / inputs.businessProfit) * 100).toFixed(1) : 0}%
+                </Text>
+              </View>
+
+              <View style={styles.comparisonRow}>
+                <Text style={styles.comparisonCellLabel}>EPF Savings</Text>
+                <Text style={styles.comparisonCellValue}>—</Text>
+                <Text style={styles.comparisonCellValue}>{formatCurrency(sdnBhdResult.epfSavings)}</Text>
+              </View>
+
+              <View style={styles.comparisonRowHighlight}>
+                <Text style={styles.comparisonCellLabelBold}>Net Cash to You</Text>
+                <Text style={comparison.difference <= 0 ? styles.comparisonCellValueSuccess : styles.comparisonCellValueBold}>
+                  {formatCurrencyPrecise(solePropResult.netCash)}
+                </Text>
+                <Text style={comparison.difference > 0 ? styles.comparisonCellValueSuccess : styles.comparisonCellValueBold}>
+                  {formatCurrencyPrecise(sdnBhdResult.netCash)}
+                </Text>
+              </View>
+            </View>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Effective Tax Rate:</Text>
-            <Text style={styles.value}>
-              {(solePropResult.effectiveTaxRate * 100).toFixed(2)}%
+
+          {/* Recommendation */}
+          <View style={styles.recommendationBox}>
+            <Text style={styles.recommendationLabel}>Recommendation</Text>
+            <Text style={styles.recommendationText}>{comparison.recommendation}</Text>
+            <Text style={styles.recommendationSavings}>
+              Annual savings: {formatCurrencyPrecise(savings)} • Difference: {(Math.abs(comparison.difference) / inputs.businessProfit * 100).toFixed(1)}% of profit
             </Text>
           </View>
 
-          {/* Enterprise Waterfall Breakdown */}
-          {solePropResult.waterfall && (
-            <View style={styles.waterfallSection}>
-              <Text style={styles.waterfallTitle}>Calculation Breakdown</Text>
-              {solePropResult.waterfall.map((step, index) => (
-                <WaterfallRow key={index} step={step} />
+          {/* Warnings */}
+          {comparison.warnings.length > 0 && (
+            <View style={styles.warningBox}>
+              <Text style={styles.warningTitle}>Important Considerations</Text>
+              {comparison.warnings.map((warning, index) => (
+                <Text key={index} style={styles.warningText}>• {warning}</Text>
               ))}
             </View>
           )}
 
-          {/* Enterprise Tax Bracket Breakdown */}
-          {solePropResult.taxBracketBreakdown && solePropResult.taxBracketBreakdown.length > 0 && (
-            <TaxBracketSection
-              breakdown={solePropResult.taxBracketBreakdown}
-              title="How Your Tax is Calculated"
-              taxableAmount={solePropResult.breakdown.taxableIncome}
-            />
-          )}
-
-          {/* Enterprise Insights */}
-          {solePropResult.insights && solePropResult.insights.length > 0 && (
-            <View style={styles.insightBox}>
-              <Text style={styles.insightTitle}>Key Insights</Text>
-              {solePropResult.insights.map((insight, index) => (
-                <Text key={index} style={styles.insightText}>• {insight}</Text>
-              ))}
+          {/* Your Inputs */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Your Inputs</Text>
             </View>
-          )}
+            <View style={styles.inputGrid}>
+              <View style={styles.inputItem}>
+                <Text style={styles.inputLabel}>Business Profit</Text>
+                <Text style={styles.inputValue}>{formatCurrency(inputs.businessProfit)}</Text>
+              </View>
+              <View style={styles.inputItem}>
+                <Text style={styles.inputLabel}>Other Income</Text>
+                <Text style={styles.inputValue}>{formatCurrency(inputs.otherIncome || 0)}</Text>
+              </View>
+              {inputs.monthlySalary && (
+                <View style={styles.inputItem}>
+                  <Text style={styles.inputLabel}>Monthly Salary (Sdn Bhd)</Text>
+                  <Text style={styles.inputValue}>{formatCurrency(inputs.monthlySalary)}/mo</Text>
+                </View>
+              )}
+              {inputs.complianceCosts && (
+                <View style={styles.inputItem}>
+                  <Text style={styles.inputLabel}>Compliance Costs</Text>
+                  <Text style={styles.inputValue}>{formatCurrency(inputs.complianceCosts)}/yr</Text>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              This report is for informational purposes only. Tax rates based on Malaysia YA 2024/2025.
+              Always consult a qualified tax advisor for your specific situation.
+            </Text>
+            <Text style={styles.footerBrand}>OpenTaxation.my</Text>
+          </View>
+        </View>
+      </Page>
+
+      {/* Page 2: Detailed Breakdowns */}
+      <Page size="A4" style={styles.page}>
+        <View style={{ ...styles.header, paddingTop: 30, paddingBottom: 20 }}>
+          <Text style={{ ...styles.headerTitle, fontSize: 20 }}>Detailed Breakdown</Text>
+          <Text style={styles.headerSubtitle}>Cash flow and tax calculation details</Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sdn Bhd Results</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Total Tax (Corporate + Personal):</Text>
-            <Text style={styles.value}>
-              RM{(sdnBhdResult.corporateTax + sdnBhdResult.personalTax + sdnBhdResult.breakdown.dividendTax).toLocaleString('en-MY', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Net Cash:</Text>
-            <Text style={styles.value}>
-              RM{sdnBhdResult.netCash.toLocaleString('en-MY', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>EPF Savings (Forced Retirement):</Text>
-            <Text style={styles.value}>
-              RM{sdnBhdResult.epfSavings.toLocaleString('en-MY', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </Text>
-          </View>
+        <View style={styles.content}>
+          <View style={styles.twoColumns}>
+            {/* Enterprise Column */}
+            <View style={styles.column}>
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Enterprise</Text>
+                  <View style={styles.sectionBadge}>
+                    <Text style={styles.sectionBadgeText}>Sole Proprietorship</Text>
+                  </View>
+                </View>
 
-          {/* Company Level Waterfall */}
-          {sdnBhdResult.companyWaterfall && (
-            <View style={styles.waterfallSection}>
-              <Text style={styles.waterfallTitle}>Company Level Breakdown</Text>
-              {sdnBhdResult.companyWaterfall.map((step, index) => (
-                <WaterfallRow key={index} step={step} />
-              ))}
-            </View>
-          )}
+                {/* Enterprise Waterfall */}
+                {solePropResult.waterfall && (
+                  <View style={styles.waterfallSection}>
+                    <Text style={styles.waterfallTitle}>Cash Flow</Text>
+                    {solePropResult.waterfall.map((step, index) => (
+                      <WaterfallRow key={index} step={step} />
+                    ))}
+                  </View>
+                )}
 
-          {/* Personal Level Waterfall */}
-          {sdnBhdResult.personalWaterfall && (
-            <View style={styles.waterfallSection}>
-              <Text style={styles.waterfallTitle}>Personal Level Breakdown</Text>
-              {sdnBhdResult.personalWaterfall.map((step, index) => (
-                <WaterfallRow key={index} step={step} />
-              ))}
-            </View>
-          )}
+                {/* Enterprise Tax Brackets */}
+                {solePropResult.taxBracketBreakdown && solePropResult.taxBracketBreakdown.length > 0 && (
+                  <TaxBracketSection
+                    breakdown={solePropResult.taxBracketBreakdown}
+                    title="Tax Calculation"
+                    taxableAmount={solePropResult.breakdown.taxableIncome}
+                  />
+                )}
 
-          {/* Corporate Tax Bracket Breakdown */}
-          {sdnBhdResult.corporateTaxBracketBreakdown && sdnBhdResult.corporateTaxBracketBreakdown.length > 0 && (
-            <TaxBracketSection
-              breakdown={sdnBhdResult.corporateTaxBracketBreakdown}
-              title="Corporate Tax Calculation"
-              taxableAmount={sdnBhdResult.breakdown.companyTaxableProfit}
-              isCorporate
-            />
-          )}
+                {/* Enterprise Insights */}
+                {solePropResult.insights && solePropResult.insights.length > 0 && (
+                  <View style={styles.insightsBox}>
+                    <Text style={styles.insightsTitle}>Key Insights</Text>
+                    {solePropResult.insights.map((insight, index) => (
+                      <View key={index} style={styles.insightItem}>
+                        <Text style={styles.insightBullet}>●</Text>
+                        <Text style={styles.insightText}>{insight}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            </View>
 
-          {/* Personal Tax Bracket Breakdown */}
-          {sdnBhdResult.personalTaxBracketBreakdown && sdnBhdResult.personalTaxBracketBreakdown.length > 0 && (
-            <TaxBracketSection
-              breakdown={sdnBhdResult.personalTaxBracketBreakdown}
-              title="Your Personal Tax Calculation"
-              taxableAmount={sdnBhdResult.breakdown.annualSalary}
-            />
-          )}
+            {/* Sdn Bhd Column */}
+            <View style={styles.column}>
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Sdn Bhd</Text>
+                  <View style={styles.sectionBadge}>
+                    <Text style={styles.sectionBadgeText}>Private Limited</Text>
+                  </View>
+                </View>
 
-          {/* Sdn Bhd Insights */}
-          {sdnBhdResult.insights && sdnBhdResult.insights.length > 0 && (
-            <View style={styles.insightBox}>
-              <Text style={styles.insightTitle}>Key Insights</Text>
-              {sdnBhdResult.insights.map((insight, index) => (
-                <Text key={index} style={styles.insightText}>• {insight}</Text>
-              ))}
-            </View>
-          )}
-        </View>
+                {/* Company Waterfall */}
+                {sdnBhdResult.companyWaterfall && (
+                  <View style={styles.waterfallSection}>
+                    <Text style={styles.waterfallTitle}>Company Level</Text>
+                    {sdnBhdResult.companyWaterfall.map((step, index) => (
+                      <WaterfallRow key={index} step={step} />
+                    ))}
+                  </View>
+                )}
 
-        {/* Warnings */}
-        {comparison.warnings.length > 0 && (
-          <View style={styles.warning}>
-            <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#92400e', marginBottom: 5 }}>
-              Important Notices
-            </Text>
-            {comparison.warnings.map((warning, index) => (
-              <Text key={index} style={styles.warningText}>
-                • {warning}
-              </Text>
-            ))}
-          </View>
-        )}
+                {/* Personal Waterfall */}
+                {sdnBhdResult.personalWaterfall && (
+                  <View style={styles.waterfallSection}>
+                    <Text style={styles.waterfallTitle}>Personal Level</Text>
+                    {sdnBhdResult.personalWaterfall.map((step, index) => (
+                      <WaterfallRow key={index} step={step} />
+                    ))}
+                  </View>
+                )}
 
-        {/* Non-Tax Factors Comparison */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Non-Tax Factors to Consider</Text>
-          <View style={styles.nonTaxTable}>
-            <View style={styles.nonTaxHeader}>
-              <Text style={styles.nonTaxCellFactor}>Factor</Text>
-              <Text style={styles.nonTaxCellValue}>Enterprise</Text>
-              <Text style={styles.nonTaxCellValue}>Sdn Bhd</Text>
-            </View>
-            <View style={styles.nonTaxRow}>
-              <Text style={styles.nonTaxCellFactor}>Liability</Text>
-              <Text style={styles.nonTaxCellValue}>Unlimited personal liability</Text>
-              <Text style={styles.nonTaxCellValue}>Limited to capital invested</Text>
-            </View>
-            <View style={styles.nonTaxRow}>
-              <Text style={styles.nonTaxCellFactor}>Banking</Text>
-              <Text style={styles.nonTaxCellValue}>Harder to get business loans</Text>
-              <Text style={styles.nonTaxCellValue}>Banks prefer companies</Text>
-            </View>
-            <View style={styles.nonTaxRow}>
-              <Text style={styles.nonTaxCellFactor}>Credibility</Text>
-              <Text style={styles.nonTaxCellValue}>Less professional perception</Text>
-              <Text style={styles.nonTaxCellValue}>More trust from clients</Text>
-            </View>
-            <View style={styles.nonTaxRow}>
-              <Text style={styles.nonTaxCellFactor}>Funding</Text>
-              <Text style={styles.nonTaxCellValue}>Cannot issue shares</Text>
-              <Text style={styles.nonTaxCellValue}>Can raise investor capital</Text>
-            </View>
-            <View style={styles.nonTaxRow}>
-              <Text style={styles.nonTaxCellFactor}>Continuity</Text>
-              <Text style={styles.nonTaxCellValue}>Dies with owner</Text>
-              <Text style={styles.nonTaxCellValue}>Perpetual existence</Text>
-            </View>
-            <View style={styles.nonTaxRow}>
-              <Text style={styles.nonTaxCellFactor}>Compliance</Text>
-              <Text style={styles.nonTaxCellValue}>Minimal (~RM60/year)</Text>
-              <Text style={styles.nonTaxCellValue}>Higher (audit, secretary)</Text>
-            </View>
-            <View style={styles.nonTaxRow}>
-              <Text style={styles.nonTaxCellFactor}>Setup Cost</Text>
-              <Text style={styles.nonTaxCellValue}>~RM60</Text>
-              <Text style={styles.nonTaxCellValue}>~RM1,000+</Text>
+                {/* Sdn Bhd Insights */}
+                {sdnBhdResult.insights && sdnBhdResult.insights.length > 0 && (
+                  <View style={styles.insightsBox}>
+                    <Text style={styles.insightsTitle}>Key Insights</Text>
+                    {sdnBhdResult.insights.map((insight, index) => (
+                      <View key={index} style={styles.insightItem}>
+                        <Text style={styles.insightBullet}>●</Text>
+                        <Text style={styles.insightText}>{insight}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
             </View>
           </View>
         </View>
+      </Page>
 
-        <View style={styles.recommendation}>
-          <Text style={styles.recommendationText}>Final Recommendation</Text>
-          <Text style={{ fontSize: 10, color: '#111827' }}>
-            {comparison.recommendation}
-          </Text>
-          <Text style={{ fontSize: 9, marginTop: 5, color: '#6b7280' }}>
-            Difference: RM{Math.abs(comparison.difference).toLocaleString('en-MY', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{' '}
-            per year
-          </Text>
+      {/* Page 3: Tax Brackets & Non-Tax Factors */}
+      <Page size="A4" style={styles.page}>
+        <View style={{ ...styles.header, paddingTop: 30, paddingBottom: 20 }}>
+          <Text style={{ ...styles.headerTitle, fontSize: 20 }}>Tax Brackets & Considerations</Text>
+          <Text style={styles.headerSubtitle}>Detailed calculations and non-tax factors</Text>
         </View>
 
-        <View style={styles.footer}>
-          <Text>
-            This report is generated for informational purposes only. Tax rates
-            are based on Malaysia YA 2024/2025. Always consult with a qualified
-            tax advisor for your specific situation.
-          </Text>
-          <Text style={{ marginTop: 5 }}>
-            Generated on:{' '}
-            {new Date().toLocaleDateString('en-MY', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </Text>
+        <View style={styles.content}>
+          {/* Sdn Bhd Tax Brackets */}
+          <View style={styles.twoColumns}>
+            <View style={styles.column}>
+              {sdnBhdResult.corporateTaxBracketBreakdown && sdnBhdResult.corporateTaxBracketBreakdown.length > 0 && (
+                <TaxBracketSection
+                  breakdown={sdnBhdResult.corporateTaxBracketBreakdown}
+                  title="Corporate Tax"
+                  taxableAmount={sdnBhdResult.breakdown.companyTaxableProfit}
+                  isCorporate
+                />
+              )}
+            </View>
+            <View style={styles.column}>
+              {sdnBhdResult.personalTaxBracketBreakdown && sdnBhdResult.personalTaxBracketBreakdown.length > 0 && (
+                <TaxBracketSection
+                  breakdown={sdnBhdResult.personalTaxBracketBreakdown}
+                  title="Personal Tax (Director)"
+                  taxableAmount={sdnBhdResult.breakdown.annualSalary}
+                />
+              )}
+            </View>
+          </View>
+
+          {/* Non-Tax Factors */}
+          <View style={{ ...styles.section, marginTop: 24 }}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Beyond Tax: Business Considerations</Text>
+            </View>
+
+            <View style={styles.nonTaxTable}>
+              <View style={styles.nonTaxHeader}>
+                <Text style={styles.nonTaxHeaderCellFirst}>Factor</Text>
+                <Text style={styles.nonTaxHeaderCell}>Enterprise</Text>
+                <Text style={styles.nonTaxHeaderCell}>Sdn Bhd</Text>
+              </View>
+              {nonTaxFactors.map((row, index) => (
+                <View key={index} style={index % 2 === 0 ? styles.nonTaxRow : styles.nonTaxRowAlt}>
+                  <Text style={styles.nonTaxCellFactor}>{row.factor}</Text>
+                  <Text style={styles.nonTaxCellValue}>{row.enterprise}</Text>
+                  <Text style={styles.nonTaxCellValue}>{row.sdnBhd}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* Footer */}
+          <View style={{ ...styles.footer, marginTop: 40 }}>
+            <Text style={styles.footerText}>
+              Tax decisions should consider both financial and non-financial factors.
+              This analysis is based on standard rates and may vary based on your specific circumstances.
+            </Text>
+            <Text style={styles.footerBrand}>OpenTaxation.my • opentaxation.my</Text>
+          </View>
         </View>
       </Page>
     </Document>
   );
 }
-

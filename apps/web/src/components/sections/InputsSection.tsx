@@ -47,6 +47,8 @@ interface InputsSectionProps {
   onTargetNetIncomeChange?: (value: number) => void;
   calculatedProfit?: number;
   onZakatChange?: (zakat: ZakatInput) => void;
+  /** Hide header for mobile tab layout (header is in MobileHeader instead) */
+  hideHeader?: boolean;
 }
 
 // Inline help component
@@ -168,6 +170,7 @@ function InputsSection({
   onTargetNetIncomeChange,
   calculatedProfit,
   onZakatChange,
+  hideHeader = false,
 }: InputsSectionProps) {
   const navigate = useNavigate();
   const inputMode = inputs.inputMode || 'profit';
@@ -186,52 +189,54 @@ function InputsSection({
       className="flex-1 overflow-hidden lg:border-r border-border/40"
     >
       <div className="h-full flex flex-col">
-        {/* Sticky header */}
-        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40 supports-[backdrop-filter]:bg-background/60 lg:bg-transparent lg:backdrop-blur-none lg:border-0">
-          <div className="px-4 sm:px-5 lg:px-8 py-3 sm:py-4 lg:py-6">
-            <div className="flex items-center justify-between gap-3">
-              <Logo size="sm" className="hidden lg:flex" />
-              <div className="flex-1 lg:hidden min-w-0">
-                <h2 className="font-display text-lg sm:text-xl font-bold tracking-tight" id="inputs-heading">
-                  Your Numbers
-                </h2>
-                <p className="text-xs text-muted-foreground">Results update as you type</p>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5 text-xs h-7 px-2.5" aria-label="Live calculation enabled">
-                  <span className="relative flex h-2 w-2" aria-hidden="true">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  Live
-                </Badge>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/dashboard')}
-                  className="h-9 px-3 text-muted-foreground hover:text-foreground active:scale-95 gap-1.5"
-                  title="Go to Dashboard"
-                >
-                  <CalendarCheck weight="duotone" className="h-4 w-4" />
-                  <span className="hidden sm:inline text-xs">Dashboard</span>
-                </Button>
-                {onClearInputs && (
+        {/* Sticky header - hidden when using MobileTabLayout */}
+        {!hideHeader && (
+          <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40 supports-[backdrop-filter]:bg-background/60 lg:bg-transparent lg:backdrop-blur-none lg:border-0">
+            <div className="px-4 sm:px-5 lg:px-8 py-3 sm:py-4 lg:py-6">
+              <div className="flex items-center justify-between gap-3">
+                <Logo size="sm" className="hidden lg:flex" />
+                <div className="flex-1 lg:hidden min-w-0">
+                  <h2 className="font-display text-lg sm:text-xl font-bold tracking-tight" id="inputs-heading">
+                    Your Numbers
+                  </h2>
+                  <p className="text-xs text-muted-foreground">Results update as you type</p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5 text-xs h-7 px-2.5" aria-label="Live calculation enabled">
+                    <span className="relative flex h-2 w-2" aria-hidden="true">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    Live
+                  </Badge>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={onClearInputs}
-                    className="h-9 w-9 p-0 text-muted-foreground hover:text-foreground active:scale-95"
-                    title="Reset all inputs to defaults"
+                    onClick={() => navigate('/dashboard')}
+                    className="h-9 px-3 text-muted-foreground hover:text-foreground active:scale-95 gap-1.5"
+                    title="Go to Dashboard"
                   >
-                    <ArrowCounterClockwise weight="bold" className="h-4 w-4" />
-                    <span className="sr-only">Reset inputs</span>
+                    <CalendarCheck weight="duotone" className="h-4 w-4" />
+                    <span className="hidden sm:inline text-xs">Dashboard</span>
                   </Button>
-                )}
-                <UserMenu />
+                  {onClearInputs && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={onClearInputs}
+                      className="h-9 w-9 p-0 text-muted-foreground hover:text-foreground active:scale-95"
+                      title="Reset all inputs to defaults"
+                    >
+                      <ArrowCounterClockwise weight="bold" className="h-4 w-4" />
+                      <span className="sr-only">Reset inputs</span>
+                    </Button>
+                  )}
+                  <UserMenu />
+                </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
+        )}
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">

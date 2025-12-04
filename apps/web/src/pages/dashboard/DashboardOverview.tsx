@@ -10,7 +10,7 @@ import {
   ChartLineUp,
 } from 'phosphor-react';
 import { useSavedCalculations } from '@/hooks/useSavedCalculations';
-import { formatCurrency } from '@/lib/formatCurrency';
+import { formatCurrency } from '@/lib/utils';
 
 export default function DashboardOverview() {
   const { user } = useAuth();

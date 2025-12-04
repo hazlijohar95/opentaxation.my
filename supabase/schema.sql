@@ -66,6 +66,69 @@ CREATE TRIGGER update_saved_calculations_updated_at
   EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================
+-- LEADS TABLE
+-- ============================================
+-- Stores leads from various CTAs (incorporation interest, newsletter, etc.)
+
+-- Lead type enum
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'lead_type') THEN
+    CREATE TYPE lead_type AS ENUM ('incorporation', 'newsletter', 'partner_inquiry');
+  END IF;
+END$$;
+
+-- Lead status enum
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'lead_status') THEN
+    CREATE TYPE lead_status AS ENUM ('new', 'contacted', 'converted', 'unsubscribed');
+  END IF;
+END$$;
+
+CREATE TABLE IF NOT EXISTS leads (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  email TEXT NOT NULL,
+  lead_type lead_type NOT NULL,
+  source TEXT DEFAULT 'website',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  user_id TEXT,  -- Optional: links to authenticated user if logged in
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  contacted_at TIMESTAMPTZ,
+  status lead_status DEFAULT 'new'
+);
+
+-- Unique constraint on email + lead_type (allow same email for different lead types)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_email_type ON leads(email, lead_type);
+
+-- Index for querying by status
+CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
+CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_leads_lead_type ON leads(lead_type);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policy: Allow anyone to insert leads (public form submission)
+CREATE POLICY "Anyone can submit leads"
+  ON leads
+  FOR INSERT
+  WITH CHECK (true);
+
+-- RLS Policy: Only authenticated users with admin role can read leads
+-- For now, we'll allow service role to read all leads (admin dashboard would use service key)
+CREATE POLICY "Service role can read leads"
+  ON leads
+  FOR SELECT
+  USING (auth.role() = 'service_role');
+
+-- RLS Policy: Users can view their own leads if logged in
+CREATE POLICY "Users can view own leads"
+  ON leads
+  FOR SELECT
+  USING (auth.jwt() ->> 'sub' = user_id);
+
+-- ============================================
 -- CLERK + SUPABASE INTEGRATION SETUP
 -- ============================================
 --

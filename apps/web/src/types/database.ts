@@ -41,6 +41,41 @@ export interface Database {
         };
         Relationships: [];
       };
+      leads: {
+        Row: {
+          id: string;
+          email: string;
+          lead_type: 'incorporation' | 'newsletter' | 'partner_inquiry';
+          source: string;
+          metadata: Json;
+          user_id: string | null;
+          created_at: string;
+          contacted_at: string | null;
+          status: 'new' | 'contacted' | 'converted' | 'unsubscribed';
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          lead_type: 'incorporation' | 'newsletter' | 'partner_inquiry';
+          source?: string;
+          metadata?: Json;
+          user_id?: string | null;
+          created_at?: string;
+          contacted_at?: string | null;
+          status?: 'new' | 'contacted' | 'converted' | 'unsubscribed';
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          lead_type?: 'incorporation' | 'newsletter' | 'partner_inquiry';
+          source?: string;
+          metadata?: Json;
+          user_id?: string | null;
+          contacted_at?: string | null;
+          status?: 'new' | 'contacted' | 'converted' | 'unsubscribed';
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

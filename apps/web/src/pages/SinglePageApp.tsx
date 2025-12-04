@@ -7,9 +7,12 @@ import { useTaxCalculation } from '../hooks/useTaxCalculation';
 import { useErrorToast } from '../hooks/useErrorToast';
 import { useTaxInputsStorage, type StoredInputs } from '../hooks/useLocalStorage';
 import { useShareableLink } from '../hooks/useShareableLink';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import LandingSection from '../components/sections/LandingSection';
 import InputsSection from '../components/sections/InputsSection';
 import ResultsSection from '../components/sections/ResultsSection';
+import ShareModal from '../components/ShareModal';
+import { MobileTabLayout, type TabType } from '../components/mobile';
 import LegalFooter from '../components/pages/LegalFooter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,6 +39,10 @@ export default function SinglePageApp() {
   const [showApp, setShowApp] = useState(false);
   const isSignedIn = !!user;
 
+  // Mobile layout state
+  const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState<TabType>('inputs');
+
   // Use localStorage persistence for all inputs
   const { inputs: storedInputs, updateInput, updateAllInputs, clearInputs } = useTaxInputsStorage(DEFAULT_INPUTS);
 
@@ -54,7 +61,10 @@ export default function SinglePageApp() {
   }, [updateAllInputs, storedInputs]);
 
   // Shareable link functionality
-  const { copyShareableLink } = useShareableLink(storedInputs, handleLoadSharedInputs);
+  const { generateShareableLink } = useShareableLink(storedInputs, handleLoadSharedInputs);
+
+  // Share modal state
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Create wrapper setters that update localStorage
   const setBusinessProfit = useCallback((value: number) => updateInput('businessProfit', value), [updateInput]);
@@ -161,37 +171,102 @@ export default function SinglePageApp() {
       </a>
       <AnimatePresence mode="wait">
         {isSignedIn ? (
-          <motion.div
-            key="app"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="h-screen w-full overflow-hidden bg-background flex flex-col lg:flex-row safe-area-insets"
-          >
-            <InputsSection
-              inputs={inputs}
-              auditRequired={auditRequired}
-              onBusinessProfitChange={setBusinessProfit}
-              onOtherIncomeChange={setOtherIncome}
-              onMonthlySalaryChange={setMonthlySalary}
-              onComplianceCostsChange={setComplianceCosts}
-              onAuditRevenueChange={setAuditRevenue}
-              onAuditAssetsChange={setAuditAssets}
-              onAuditEmployeesChange={setAuditEmployees}
-              onAuditCostChange={setAuditCost}
-              onReliefsChange={setReliefs}
-              onApplyYa2025DividendSurchargeChange={setApplyYa2025DividendSurcharge}
-              onDividendDistributionPercentChange={setDividendDistributionPercent}
-              onForeignOwnershipChange={setHasForeignOwnership}
-              onClearInputs={handleClearInputs}
-              onInputModeChange={setInputMode}
-              onTargetNetIncomeChange={setTargetNetIncome}
-              calculatedProfit={effectiveBusinessProfit}
-              onZakatChange={setZakat}
-            />
-            <ResultsSection comparison={comparison} inputs={inputs} onShareClick={copyShareableLink} />
-          </motion.div>
+          isMobile ? (
+            // Mobile: Tab-based layout with full-height content
+            <motion.div
+              key="app-mobile"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="safe-area-insets"
+            >
+              <MobileTabLayout
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                hasResults={!!comparison}
+                onClearInputs={handleClearInputs}
+                inputsContent={
+                  <InputsSection
+                    inputs={inputs}
+                    auditRequired={auditRequired}
+                    onBusinessProfitChange={setBusinessProfit}
+                    onOtherIncomeChange={setOtherIncome}
+                    onMonthlySalaryChange={setMonthlySalary}
+                    onComplianceCostsChange={setComplianceCosts}
+                    onAuditRevenueChange={setAuditRevenue}
+                    onAuditAssetsChange={setAuditAssets}
+                    onAuditEmployeesChange={setAuditEmployees}
+                    onAuditCostChange={setAuditCost}
+                    onReliefsChange={setReliefs}
+                    onApplyYa2025DividendSurchargeChange={setApplyYa2025DividendSurcharge}
+                    onDividendDistributionPercentChange={setDividendDistributionPercent}
+                    onForeignOwnershipChange={setHasForeignOwnership}
+                    onInputModeChange={setInputMode}
+                    onTargetNetIncomeChange={setTargetNetIncome}
+                    calculatedProfit={effectiveBusinessProfit}
+                    onZakatChange={setZakat}
+                    hideHeader
+                  />
+                }
+                resultsContent={
+                  <ResultsSection
+                    comparison={comparison}
+                    inputs={inputs}
+                    onShareClick={() => setIsShareModalOpen(true)}
+                    hideHeader
+                  />
+                }
+              />
+              <ShareModal
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                inputs={inputs}
+                comparison={comparison}
+                generateShareableLink={generateShareableLink}
+              />
+            </motion.div>
+          ) : (
+            // Desktop: Side-by-side layout
+            <motion.div
+              key="app-desktop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="h-screen w-full overflow-hidden bg-background flex flex-row safe-area-insets"
+            >
+              <InputsSection
+                inputs={inputs}
+                auditRequired={auditRequired}
+                onBusinessProfitChange={setBusinessProfit}
+                onOtherIncomeChange={setOtherIncome}
+                onMonthlySalaryChange={setMonthlySalary}
+                onComplianceCostsChange={setComplianceCosts}
+                onAuditRevenueChange={setAuditRevenue}
+                onAuditAssetsChange={setAuditAssets}
+                onAuditEmployeesChange={setAuditEmployees}
+                onAuditCostChange={setAuditCost}
+                onReliefsChange={setReliefs}
+                onApplyYa2025DividendSurchargeChange={setApplyYa2025DividendSurcharge}
+                onDividendDistributionPercentChange={setDividendDistributionPercent}
+                onForeignOwnershipChange={setHasForeignOwnership}
+                onClearInputs={handleClearInputs}
+                onInputModeChange={setInputMode}
+                onTargetNetIncomeChange={setTargetNetIncome}
+                calculatedProfit={effectiveBusinessProfit}
+                onZakatChange={setZakat}
+              />
+              <ResultsSection comparison={comparison} inputs={inputs} onShareClick={() => setIsShareModalOpen(true)} />
+              <ShareModal
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                inputs={inputs}
+                comparison={comparison}
+                generateShareableLink={generateShareableLink}
+              />
+            </motion.div>
+          )
         ) : (
           <motion.div
             key="sign-in-prompt"

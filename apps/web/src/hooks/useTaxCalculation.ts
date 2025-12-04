@@ -34,6 +34,7 @@ export function useTaxCalculation(inputs: TaxCalculationInputs): ComparisonResul
       businessProfit: inputs.businessProfit,
       otherIncome: inputs.otherIncome || 0,
       reliefs: inputs.reliefs,
+      zakat: inputs.zakat,
     });
 
     const sdnBhdResult = calculateSdnBhdScenario({
@@ -46,6 +47,7 @@ export function useTaxCalculation(inputs: TaxCalculationInputs): ComparisonResul
       reliefs: inputs.reliefs,
       applyYa2025DividendSurcharge: inputs.applyYa2025DividendSurcharge,
       dividendDistributionPercent: inputs.dividendDistributionPercent,
+      zakat: inputs.zakat,
     });
 
     return compareScenarios(solePropResult, sdnBhdResult, inputs.businessProfit, inputs);
@@ -62,6 +64,9 @@ export function useTaxCalculation(inputs: TaxCalculationInputs): ComparisonResul
     reliefsKey, // Use serialized reliefs instead of object reference
     inputs.applyYa2025DividendSurcharge,
     inputs.dividendDistributionPercent,
+    inputs.zakat?.enabled,
+    inputs.zakat?.autoCalculate,
+    inputs.zakat?.amountPaid,
   ]);
 }
 

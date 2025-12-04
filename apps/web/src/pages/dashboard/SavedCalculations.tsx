@@ -13,7 +13,7 @@ import {
   User,
 } from 'phosphor-react';
 import { useSavedCalculations } from '@/hooks/useSavedCalculations';
-import { formatCurrency } from '@/lib/formatCurrency';
+import { formatCurrency } from '@/lib/utils';
 import type { SavedCalculation } from '@/types/database';
 
 export default function SavedCalculations() {

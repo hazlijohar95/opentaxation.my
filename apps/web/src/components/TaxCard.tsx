@@ -4,11 +4,11 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Warning, CaretDown, CaretUp, Lightbulb } from 'phosphor-react';
+import { Warning, CaretDown, CaretUp, Lightbulb, Heart } from 'phosphor-react';
 import WaterfallBreakdown from './WaterfallBreakdown';
 import TaxBracketBreakdownComponent from './TaxBracketBreakdown';
 import { formatCurrency } from '@/lib/utils';
-import type { WaterfallStep, TaxBracketBreakdown } from '@tax-engine/core';
+import type { WaterfallStep, TaxBracketBreakdown, ZakatResult } from '@tax-engine/core';
 
 interface TaxCardProps {
   title: string;
@@ -33,6 +33,8 @@ interface TaxCardProps {
   personalTaxBracketBreakdown?: TaxBracketBreakdown[];
   companyTaxableProfit?: number;
   personalTaxableIncome?: number;
+  // Zakat information
+  zakat?: ZakatResult;
 }
 
 function TaxCard({
@@ -54,6 +56,7 @@ function TaxCard({
   personalTaxBracketBreakdown,
   companyTaxableProfit,
   personalTaxableIncome,
+  zakat,
 }: TaxCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -97,6 +100,21 @@ function TaxCard({
                 {formatCurrency(safeTax)}
               </span>
             </div>
+
+            {/* Zakat indicator - visible without expanding */}
+            {zakat?.enabled && zakat.taxBenefit > 0 && (
+              <div className="flex items-center gap-2 py-2 px-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                <Heart weight="duotone" className="h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                    Zakat saves {formatCurrency(zakat.taxBenefit)}
+                  </p>
+                  <p className="text-[10px] text-emerald-600/70 dark:text-emerald-400/70">
+                    {title === 'Enterprise' ? '100% tax rebate' : '2.5% deduction'}
+                  </p>
+                </div>
+              </div>
+            )}
 
             <Separator className="bg-border/50" />
 

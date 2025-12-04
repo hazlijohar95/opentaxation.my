@@ -525,4 +525,56 @@
       min-width: 48px;
     }
   }
+
+  /* Mobile tab layout - iOS-native spring animations */
+  .mobile-tab-content {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Tab bar safe area */
+  .mobile-tab-bar {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Mobile content area - full height accounting for header and tabs */
+  .mobile-content-area {
+    height: calc(100vh - 48px - 49px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    height: calc(100dvh - 48px - 49px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Mobile header safe area */
+  .mobile-header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* Haptic-like feedback animation */
+  @keyframes haptic-bump {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(0.95);
+    }
+  }
+
+  .haptic-feedback:active {
+    animation: haptic-bump 0.1s ease-out;
+  }
+
+  /* Swipe indicator pulse */
+  @keyframes swipe-hint {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  .swipe-hint {
+    animation: swipe-hint 2s ease-in-out infinite;
+    animation-delay: 1s;
+  }
 }
