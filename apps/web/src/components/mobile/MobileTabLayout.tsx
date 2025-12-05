@@ -21,7 +21,7 @@ function MobileTabLayout({
   onClearInputs,
 }: MobileTabLayoutProps) {
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
+    <div className="h-screen min-h-[100dvh] flex flex-col bg-background overflow-hidden">
       {/* Compact header */}
       <MobileHeader onClearInputs={onClearInputs} />
 

@@ -6,10 +6,32 @@ import type {
 } from '../types';
 import { calculateSolePropScenario } from './calculateSolePropScenario';
 import { calculateSdnBhdScenario } from './calculateSdnBhdScenario';
-import { SIMILARITY_THRESHOLD, CROSSOVER_CALCULATION } from '../constants';
+import { SIMILARITY_THRESHOLD, CROSSOVER_CALCULATION, DEFAULTS, SME_THRESHOLDS } from '../constants';
 
 /**
- * Compare Sole Prop vs Sdn Bhd scenarios
+ * Compare Sole Prop (Enterprise) vs Sdn Bhd scenarios
+ *
+ * ## Comparison Logic
+ * - Calculates net cash difference between scenarios
+ * - Uses RM3,000 threshold to determine if scenarios are "similar"
+ * - Recommends the scenario with higher net cash to owner
+ *
+ * ## Warnings Generated
+ * - **Affordability**: If proposed salary exceeds company's capacity
+ * - **SME Qualification**: If company doesn't qualify for SME rates (15-17%)
+ *   - Revenue > RM50M
+ *   - ≥20% foreign ownership
+ *
+ * ## Crossover Point
+ * - Uses binary search to find profit level where both scenarios are equal
+ * - Searches RM0 to RM2M with RM100 tolerance
+ * - Results are cached for performance
+ *
+ * @param solePropResult - Calculated Sole Prop scenario
+ * @param sdnBhdResult - Calculated Sdn Bhd scenario
+ * @param businessProfit - Current business profit level
+ * @param inputs - Original calculation inputs
+ * @returns Comparison result with recommendation and crossover point
  */
 export function compareScenarios(
   solePropResult: SolePropScenarioResult,
@@ -31,6 +53,16 @@ export function compareScenarios(
       `The company would need an additional RM${sdnBhdResult.salaryAffordability.shortfall.toLocaleString('en-MY')} ` +
       `to pay this salary. Maximum affordable salary: RM${maxMonthly.toLocaleString('en-MY')}/month.`
     );
+  } else {
+    // Check for tight margin - salary is affordable but leaves little for dividends
+    const salaryCostRatio = (sdnBhdResult.breakdown.annualSalary + sdnBhdResult.employerEPF + sdnBhdResult.employerSOCSO) / businessProfit;
+    if (salaryCostRatio > 0.8 && businessProfit > 0) {
+      const percentUsed = Math.round(salaryCostRatio * 100);
+      warnings.push(
+        `Your salary uses ${percentUsed}% of company profit. ` +
+        `This leaves limited room for dividends and retained earnings.`
+      );
+    }
   }
 
   // Check for SME qualification issues
@@ -39,7 +71,7 @@ export function compareScenarios(
   // - ≥20% foreign ownership (checked via hasForeignOwnership flag)
   const hasSmeQualificationIssue = Boolean(
     inputs.hasForeignOwnership ||
-    (inputs.auditCriteria && inputs.auditCriteria.revenue > 50_000_000)
+    (inputs.auditCriteria && inputs.auditCriteria.revenue > SME_THRESHOLDS.MAX_REVENUE)
   );
 
   if (hasSmeQualificationIssue) {
@@ -49,10 +81,10 @@ export function compareScenarios(
         `Companies with ≥20% foreign ownership pay a flat 24% corporate tax rate. ` +
         `The Sdn Bhd calculation shown assumes SME rates - actual tax may be higher.`
       );
-    } else if (inputs.auditCriteria && inputs.auditCriteria.revenue > 50_000_000) {
+    } else if (inputs.auditCriteria && inputs.auditCriteria.revenue > SME_THRESHOLDS.MAX_REVENUE) {
       warnings.push(
         `Your company may not qualify for SME tax rates (15-17%) due to high revenue. ` +
-        `Companies with revenue above RM50M pay a flat 24% corporate tax rate. ` +
+        `Companies with revenue above RM${(SME_THRESHOLDS.MAX_REVENUE / 1_000_000).toFixed(0)}M pay a flat 24% corporate tax rate. ` +
         `The Sdn Bhd calculation shown assumes SME rates - actual tax may be higher.`
       );
     }

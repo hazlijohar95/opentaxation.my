@@ -88,6 +88,16 @@ export function validateInputs(inputs: TaxCalculationInputs): ValidationError[] 
     }
   }
 
+  // Zakat validation
+  if (inputs.zakat) {
+    if (inputs.zakat.amountPaid !== undefined && inputs.zakat.amountPaid < 0) {
+      errors.push({
+        field: 'zakat.amountPaid',
+        message: 'Zakat amount cannot be negative',
+      });
+    }
+  }
+
   return errors;
 }
 
@@ -111,6 +121,17 @@ export function sanitizeInputs(inputs: Partial<TaxCalculationInputs>): TaxCalcul
     reliefs: inputs.reliefs,
     dividendDistributionPercent: inputs.dividendDistributionPercent !== undefined
       ? Math.max(0, Math.min(100, inputs.dividendDistributionPercent))
+      : undefined,
+    // Zakat sanitization
+    zakat: inputs.zakat
+      ? {
+          enabled: inputs.zakat.enabled ?? false,
+          amountPaid: inputs.zakat.amountPaid !== undefined
+            ? Math.max(0, inputs.zakat.amountPaid)
+            : undefined,
+          autoCalculate: inputs.zakat.autoCalculate ?? true,
+          method: inputs.zakat.method,
+        }
       : undefined,
   };
 }

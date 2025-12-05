@@ -55,25 +55,31 @@ export function initAnalytics() {
 
   // Google Analytics 4
   if (gaId) {
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
-    document.head.appendChild(script);
-
+    // Set up dataLayer before script loads
     if (!window.dataLayer) {
       window.dataLayer = [];
     }
+
+    // Define gtag function that queues commands
     const gtag = (...args: unknown[]) => {
       if (window.dataLayer) {
         window.dataLayer.push(args);
       }
     };
     window.gtag = gtag;
+
+    // Queue initial config - these will be processed when script loads
     gtag('js', new Date());
     gtag('config', gaId, {
       anonymize_ip: true,
       respect_dnt: true,
     });
+
+    // Load the script asynchronously
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+    document.head.appendChild(script);
   }
 
   // Plausible Analytics

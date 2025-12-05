@@ -31,60 +31,66 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background-secondary: 0 0% 96%;
+    --foreground: 0 0% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 221 83% 53%;
     --radius: 0.5rem;
-    /* Blue accent for CTAs only - shadcn primary dark blue */
-    --blue: oklch(0.488 0.243 264.376);
+    /* Primary brand blue (#3B82F6) */
+    --blue: 221 83% 53%;
     --blue-foreground: 0 0% 100%;
-    /* Extended blue palette for gradients */
-    --blue-light: oklch(0.75 0.12 264);
-    --blue-lighter: oklch(0.85 0.08 264);
-    --blue-dark: oklch(0.4 0.2 264);
+    /* Extended blue palette */
+    --blue-light: 221 80% 65%;
+    --blue-lighter: 221 70% 80%;
+    --blue-dark: 221 83% 45%;
+    /* Surface for code blocks */
+    --surface-dark: 0 0% 12%;
   }
 
   /* Dark mode - Clean neutral greys (calm and easy on eyes) */
   .dark {
     --background: 0 0% 7%;
+    --background-secondary: 0 0% 10%;
     --foreground: 0 0% 90%;
     --card: 0 0% 9%;
     --card-foreground: 0 0% 90%;
     --popover: 0 0% 9%;
     --popover-foreground: 0 0% 90%;
-    --primary: 0 0% 90%;
-    --primary-foreground: 0 0% 7%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 14%;
     --secondary-foreground: 0 0% 90%;
     --muted: 0 0% 14%;
     --muted-foreground: 0 0% 55%;
     --accent: 0 0% 14%;
     --accent-foreground: 0 0% 90%;
-    --destructive: 0 63% 31%;
+    --destructive: 0 63% 45%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 18%;
     --input: 0 0% 18%;
-    --ring: 0 0% 50%;
-    /* Dark mode - keep blue subtle for accents only */
-    --blue: 0 0% 70%;
-    --blue-light: 0 0% 60%;
-    --blue-lighter: 0 0% 50%;
-    --blue-dark: 0 0% 80%;
+    --ring: 217 91% 60%;
+    /* Dark mode - blue adjusted for dark backgrounds */
+    --blue: 217 91% 60%;
+    --blue-light: 217 85% 68%;
+    --blue-lighter: 217 75% 75%;
+    --blue-dark: 217 91% 50%;
+    /* Surface for code blocks */
+    --surface-dark: 0 0% 5%;
   }
 
   html.dark {
@@ -151,7 +157,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -166,10 +172,9 @@
   }
 
   /* Tabular numbers for clean, aligned financial values */
-  /* Using Inter for numbers as Urbanist doesn't have tabular nums */
   .font-numbers,
   [class*="font-numbers"] {
-    font-family: 'Inter', 'Urbanist', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
   }
@@ -240,6 +245,69 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Section background patterns for landing page layouts */
+  .section-primary {
+    @apply bg-background;
+  }
+
+  .section-secondary {
+    @apply bg-background-secondary;
+  }
+
+  .section-cta {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .section-cta h1,
+  .section-cta h2,
+  .section-cta h3,
+  .section-cta h4,
+  .section-cta p,
+  .section-cta span {
+    @apply text-primary-foreground;
+  }
+
+  .section-cta .text-muted-foreground {
+    @apply text-primary-foreground/70;
+  }
+
+  .section-dark {
+    @apply bg-surface-dark text-white;
+  }
+
+  .section-dark h1,
+  .section-dark h2,
+  .section-dark h3,
+  .section-dark h4 {
+    @apply text-white;
+  }
+
+  .section-dark .text-muted-foreground {
+    @apply text-white/60;
+  }
+
+  /* Consistent section padding */
+  .section-padding {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  .section-padding-sm {
+    @apply py-10 sm:py-12 lg:py-16;
+  }
+
+  /* Container widths matching design system (1112px max) */
+  .container-content {
+    @apply max-w-[1112px] mx-auto px-5 sm:px-8 lg:px-10;
+  }
+
+  .container-narrow {
+    @apply max-w-3xl mx-auto px-5 sm:px-8;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-5 sm:px-8 lg:px-10;
   }
 
   .animate-in {

@@ -1,4 +1,5 @@
 import { memo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -22,39 +23,40 @@ interface WhatsNextCTAProps {
 
 interface ServiceItem {
   icon: typeof Buildings;
-  title: string;
-  description: string;
-  priceRange: string;
+  titleKey: string;
+  descriptionKey: string;
+  priceRangeKey: string;
 }
 
-const services: ServiceItem[] = [
+const serviceConfigs: ServiceItem[] = [
   {
     icon: Buildings,
-    title: 'Company Secretary',
-    description: 'SSM registration & compliance',
-    priceRange: 'from RM1,200/year',
+    titleKey: 'whatsNext.service.secretary.title',
+    descriptionKey: 'whatsNext.service.secretary.desc',
+    priceRangeKey: 'whatsNext.service.secretary.price',
   },
   {
     icon: BookBookmark,
-    title: 'Accounting Services',
-    description: 'Bookkeeping & financial statements',
-    priceRange: 'from RM200/month',
+    titleKey: 'whatsNext.service.accounting.title',
+    descriptionKey: 'whatsNext.service.accounting.desc',
+    priceRangeKey: 'whatsNext.service.accounting.price',
   },
   {
     icon: Calculator,
-    title: 'Tax Filing',
-    description: 'Corporate tax returns & planning',
-    priceRange: 'from RM500/year',
+    titleKey: 'whatsNext.service.tax.title',
+    descriptionKey: 'whatsNext.service.tax.desc',
+    priceRangeKey: 'whatsNext.service.tax.price',
   },
   {
     icon: Bank,
-    title: 'Business Banking',
-    description: 'Corporate account setup assistance',
-    priceRange: 'Free guidance',
+    titleKey: 'whatsNext.service.banking.title',
+    descriptionKey: 'whatsNext.service.banking.desc',
+    priceRangeKey: 'whatsNext.service.banking.price',
   },
 ];
 
 function WhatsNextCTA({ comparison, onDismiss }: WhatsNextCTAProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [isDismissed, setIsDismissed] = useState(false);
   const [email, setEmail] = useState('');
@@ -125,24 +127,24 @@ function WhatsNextCTA({ comparison, onDismiss }: WhatsNextCTAProps) {
             {/* Header */}
             <div className="pr-8">
               <h3 className="font-display text-lg sm:text-xl font-semibold tracking-tight text-foreground">
-                Ready to incorporate?
+                {t('whatsNext.title')}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                With potential savings of{' '}
+                {t('whatsNext.subtitle')}{' '}
                 <span className="font-numbers font-medium text-foreground">
                   RM{savingsAmount.toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                 </span>
-                /year, here's what you'll need:
+                {t('whatsNext.perYear')}
               </p>
             </div>
 
             {/* Services Grid */}
             <div className="grid grid-cols-2 gap-3">
-              {services.map((service) => {
+              {serviceConfigs.map((service) => {
                 const Icon = service.icon;
                 return (
                   <div
-                    key={service.title}
+                    key={service.titleKey}
                     className="group p-3 rounded-xl bg-background/50 border border-border/40 hover:border-border/60 hover:bg-background/80 transition-all duration-200"
                   >
                     <div className="flex items-start gap-2.5">
@@ -151,13 +153,13 @@ function WhatsNextCTA({ comparison, onDismiss }: WhatsNextCTAProps) {
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-foreground leading-tight">
-                          {service.title}
+                          {t(service.titleKey)}
                         </p>
                         <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                          {service.description}
+                          {t(service.descriptionKey)}
                         </p>
                         <p className="text-xs text-muted-foreground/70 mt-1 font-numbers">
-                          {service.priceRange}
+                          {t(service.priceRangeKey)}
                         </p>
                       </div>
                     </div>
@@ -178,10 +180,10 @@ function WhatsNextCTA({ comparison, onDismiss }: WhatsNextCTAProps) {
                   <CheckCircle weight="duotone" className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                      You're on the list!
+                      {t('whatsNext.onTheList')}
                     </p>
                     <p className="text-xs text-emerald-600/80 dark:text-emerald-400/80 mt-0.5">
-                      We'll connect you with verified partners soon.
+                      {t('whatsNext.connectSoon')}
                     </p>
                   </div>
                 </motion.div>
@@ -214,10 +216,10 @@ function WhatsNextCTA({ comparison, onDismiss }: WhatsNextCTAProps) {
                       className="h-11 px-5 rounded-xl bg-foreground text-background text-sm font-medium hover:bg-foreground/90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                     >
                       {isSubmitting ? (
-                        <span className="animate-subtle-pulse">Sending...</span>
+                        <span className="animate-subtle-pulse">{t('whatsNext.sending')}</span>
                       ) : (
                         <>
-                          Get quotes
+                          {t('whatsNext.getQuotes')}
                           <CaretRight weight="bold" className="h-3.5 w-3.5" />
                         </>
                       )}
@@ -227,7 +229,7 @@ function WhatsNextCTA({ comparison, onDismiss }: WhatsNextCTAProps) {
                     <p className="text-xs text-red-500 text-center">{error}</p>
                   ) : (
                     <p className="text-xs text-muted-foreground/70 text-center">
-                      We'll connect you with verified professionals. No spam, ever.
+                      {t('whatsNext.noSpam')}
                     </p>
                   )}
                 </motion.form>
@@ -237,7 +239,7 @@ function WhatsNextCTA({ comparison, onDismiss }: WhatsNextCTAProps) {
             {/* Trust indicators */}
             <div className="flex items-center justify-center gap-4 pt-2">
               <span className="text-xs text-muted-foreground/60">
-                Trusted by 1,000+ Malaysian businesses
+                {t('whatsNext.trustedBy')}
               </span>
             </div>
           </CardContent>

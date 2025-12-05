@@ -2,20 +2,20 @@
  * Utility functions for rounding financial values
  */
 
-import { ROUNDING } from '../constants';
-
 /**
  * Round a number to currency precision (2 decimal places)
+ * Using direct multipliers for clarity and performance
  */
 export function roundCurrency(value: number): number {
-  return Math.round(value * Math.pow(10, ROUNDING.CURRENCY)) / Math.pow(10, ROUNDING.CURRENCY);
+  return Math.round(value * 100) / 100;
 }
 
 /**
  * Round a number to percentage precision (4 decimal places)
+ * Using direct multipliers for clarity and performance
  */
 export function roundPercentage(value: number): number {
-  return Math.round(value * Math.pow(10, ROUNDING.PERCENTAGE)) / Math.pow(10, ROUNDING.PERCENTAGE);
+  return Math.round(value * 10000) / 10000;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { isAuditExempt, getDefaultReliefs, calculateRequiredIncomeForNetCash, calculateTotalReliefs, type PersonalReliefs } from '@tax-engine/config';
@@ -9,19 +9,17 @@ import { useTaxInputsStorage, type StoredInputs } from '../hooks/useLocalStorage
 import { useShareableLink } from '../hooks/useShareableLink';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import LandingSection from '../components/sections/LandingSection';
-import InputsSection from '../components/sections/InputsSection';
+import InputsSection, { type InputCallbacks } from '../components/sections/InputsSection';
 import ResultsSection from '../components/sections/ResultsSection';
 import ShareModal from '../components/ShareModal';
 import { MobileTabLayout, type TabType } from '../components/mobile';
 import LegalFooter from '../components/pages/LegalFooter';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Default values for tax inputs
 const DEFAULT_INPUTS: StoredInputs = {
-  businessProfit: 150000,
+  businessProfit: 0,
   otherIncome: 0,
-  monthlySalary: 5000,
+  monthlySalary: 0,
   complianceCosts: 5000,
   auditRevenue: 100000,
   auditAssets: 300000,
@@ -35,7 +33,7 @@ const DEFAULT_INPUTS: StoredInputs = {
 };
 
 export default function SinglePageApp() {
-  const { user, isLoading, signInWithGoogle } = useAuth();
+  const { user } = useAuth();
   const [showApp, setShowApp] = useState(false);
   const isSignedIn = !!user;
 
@@ -87,6 +85,32 @@ export default function SinglePageApp() {
     clearInputs();
     setReliefs(getDefaultReliefs());
   }, [clearInputs]);
+
+  // Create callbacks object for InputsSection (Callback Object Pattern)
+  // This reduces prop drilling from 20+ individual props to a single callbacks object
+  const inputCallbacks: InputCallbacks = useMemo(() => ({
+    onBusinessProfitChange: setBusinessProfit,
+    onOtherIncomeChange: setOtherIncome,
+    onMonthlySalaryChange: setMonthlySalary,
+    onComplianceCostsChange: setComplianceCosts,
+    onAuditRevenueChange: setAuditRevenue,
+    onAuditAssetsChange: setAuditAssets,
+    onAuditEmployeesChange: setAuditEmployees,
+    onAuditCostChange: setAuditCost,
+    onReliefsChange: setReliefs,
+    onApplyYa2025DividendSurchargeChange: setApplyYa2025DividendSurcharge,
+    onDividendDistributionPercentChange: setDividendDistributionPercent,
+    onForeignOwnershipChange: setHasForeignOwnership,
+    onClearInputs: handleClearInputs,
+    onInputModeChange: setInputMode,
+    onTargetNetIncomeChange: setTargetNetIncome,
+    onZakatChange: setZakat,
+  }), [
+    setBusinessProfit, setOtherIncome, setMonthlySalary, setComplianceCosts,
+    setAuditRevenue, setAuditAssets, setAuditEmployees, setAuditCost,
+    setReliefs, setApplyYa2025DividendSurcharge, setDividendDistributionPercent,
+    setHasForeignOwnership, handleClearInputs, setInputMode, setTargetNetIncome, setZakat,
+  ]);
 
   // Calculate derived state during render (not in Effects)
   // Per React best practices: https://react.dev/learn/you-might-not-need-an-effect
@@ -170,138 +194,77 @@ export default function SinglePageApp() {
         Skip to results
       </a>
       <AnimatePresence mode="wait">
-        {isSignedIn ? (
-          isMobile ? (
-            // Mobile: Tab-based layout with full-height content
-            <motion.div
-              key="app-mobile"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="safe-area-insets"
-            >
-              <MobileTabLayout
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                hasResults={!!comparison}
-                onClearInputs={handleClearInputs}
-                inputsContent={
-                  <InputsSection
-                    inputs={inputs}
-                    auditRequired={auditRequired}
-                    onBusinessProfitChange={setBusinessProfit}
-                    onOtherIncomeChange={setOtherIncome}
-                    onMonthlySalaryChange={setMonthlySalary}
-                    onComplianceCostsChange={setComplianceCosts}
-                    onAuditRevenueChange={setAuditRevenue}
-                    onAuditAssetsChange={setAuditAssets}
-                    onAuditEmployeesChange={setAuditEmployees}
-                    onAuditCostChange={setAuditCost}
-                    onReliefsChange={setReliefs}
-                    onApplyYa2025DividendSurchargeChange={setApplyYa2025DividendSurcharge}
-                    onDividendDistributionPercentChange={setDividendDistributionPercent}
-                    onForeignOwnershipChange={setHasForeignOwnership}
-                    onInputModeChange={setInputMode}
-                    onTargetNetIncomeChange={setTargetNetIncome}
-                    calculatedProfit={effectiveBusinessProfit}
-                    onZakatChange={setZakat}
-                    hideHeader
-                  />
-                }
-                resultsContent={
-                  <ResultsSection
-                    comparison={comparison}
-                    inputs={inputs}
-                    onShareClick={() => setIsShareModalOpen(true)}
-                    hideHeader
-                  />
-                }
-              />
-              <ShareModal
-                isOpen={isShareModalOpen}
-                onClose={() => setIsShareModalOpen(false)}
-                inputs={inputs}
-                comparison={comparison}
-                generateShareableLink={generateShareableLink}
-              />
-            </motion.div>
-          ) : (
-            // Desktop: Side-by-side layout
-            <motion.div
-              key="app-desktop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="h-screen w-full overflow-hidden bg-background flex flex-row safe-area-insets"
-            >
-              <InputsSection
-                inputs={inputs}
-                auditRequired={auditRequired}
-                onBusinessProfitChange={setBusinessProfit}
-                onOtherIncomeChange={setOtherIncome}
-                onMonthlySalaryChange={setMonthlySalary}
-                onComplianceCostsChange={setComplianceCosts}
-                onAuditRevenueChange={setAuditRevenue}
-                onAuditAssetsChange={setAuditAssets}
-                onAuditEmployeesChange={setAuditEmployees}
-                onAuditCostChange={setAuditCost}
-                onReliefsChange={setReliefs}
-                onApplyYa2025DividendSurchargeChange={setApplyYa2025DividendSurcharge}
-                onDividendDistributionPercentChange={setDividendDistributionPercent}
-                onForeignOwnershipChange={setHasForeignOwnership}
-                onClearInputs={handleClearInputs}
-                onInputModeChange={setInputMode}
-                onTargetNetIncomeChange={setTargetNetIncome}
-                calculatedProfit={effectiveBusinessProfit}
-                onZakatChange={setZakat}
-              />
-              <ResultsSection comparison={comparison} inputs={inputs} onShareClick={() => setIsShareModalOpen(true)} />
-              <ShareModal
-                isOpen={isShareModalOpen}
-                onClose={() => setIsShareModalOpen(false)}
-                inputs={inputs}
-                comparison={comparison}
-                generateShareableLink={generateShareableLink}
-              />
-            </motion.div>
-          )
-        ) : (
+        {isMobile ? (
+          // Mobile: Tab-based layout with full-height content
           <motion.div
-            key="sign-in-prompt"
+            key="app-mobile"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="h-screen w-full flex items-center justify-center bg-background p-4"
+            className="safe-area-insets"
           >
-            <Card className="max-w-md w-full border">
-              <CardHeader>
-                <CardTitle className="text-2xl font-display">Sign In Required</CardTitle>
-                <CardDescription>
-                  Please sign in to access the tax calculator.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button
-                  size="lg"
-                  variant="cta"
-                  className="w-full"
-                  onClick={signInWithGoogle}
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Loading...' : 'Sign in with Google'}
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setShowApp(false)}
-                  className="w-full"
-                >
-                  Back to Home
-                </Button>
-              </CardContent>
-            </Card>
+            <MobileTabLayout
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              hasResults={!!comparison}
+              onClearInputs={handleClearInputs}
+              inputsContent={
+                <InputsSection
+                  inputs={inputs}
+                  auditRequired={auditRequired}
+                  callbacks={inputCallbacks}
+                  calculatedProfit={effectiveBusinessProfit}
+                  hideHeader
+                />
+              }
+              resultsContent={
+                <ResultsSection
+                  comparison={comparison}
+                  inputs={inputs}
+                  onShareClick={() => setIsShareModalOpen(true)}
+                  hideHeader
+                  isSignedIn={isSignedIn}
+                />
+              }
+            />
+            <ShareModal
+              isOpen={isShareModalOpen}
+              onClose={() => setIsShareModalOpen(false)}
+              inputs={inputs}
+              comparison={comparison}
+              generateShareableLink={generateShareableLink}
+            />
+          </motion.div>
+        ) : (
+          // Desktop: Side-by-side layout
+          <motion.div
+            key="app-desktop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="h-screen w-full overflow-hidden bg-background flex flex-row safe-area-insets"
+          >
+            <InputsSection
+              inputs={inputs}
+              auditRequired={auditRequired}
+              callbacks={inputCallbacks}
+              calculatedProfit={effectiveBusinessProfit}
+            />
+            <ResultsSection
+              comparison={comparison}
+              inputs={inputs}
+              onShareClick={() => setIsShareModalOpen(true)}
+              isSignedIn={isSignedIn}
+            />
+            <ShareModal
+              isOpen={isShareModalOpen}
+              onClose={() => setIsShareModalOpen(false)}
+              inputs={inputs}
+              comparison={comparison}
+              generateShareableLink={generateShareableLink}
+            />
           </motion.div>
         )}
       </AnimatePresence>

@@ -11,7 +11,7 @@ function AnimatedBackground() {
   return (
     <div className="absolute inset-0 overflow-hidden">
       {/* Base gradient - adapts to theme */}
-      <div className="absolute inset-0 bg-gradient-to-br from-muted/30 via-background to-muted/50" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-muted/30" />
 
       {/* Floating geometric shapes */}
       <div className="absolute inset-0">
@@ -204,7 +204,7 @@ export default function AuthPage() {
                 variant="outline"
                 onClick={signInWithGoogle}
                 disabled={isLoading}
-                className="w-full h-14 text-base font-medium rounded-xl border-2 hover:bg-muted/50 hover:border-foreground/20 transition-all duration-300"
+                className="w-full h-14 text-base font-medium rounded-xl border-2 hover:bg-muted/50 hover:border-primary/30 transition-all duration-300"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-3">
@@ -241,8 +241,8 @@ export default function AuthPage() {
                   transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
                   className="flex items-start gap-3"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-muted border border-border/50 flex items-center justify-center flex-shrink-0">
-                    <feature.icon weight="duotone" className="h-5 w-5 text-foreground/70" />
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                    <feature.icon weight="duotone" className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-medium text-sm">{feature.title}</h3>

@@ -2,7 +2,18 @@
 
 ## Tax Year
 - **Year of Assessment (YA)**: 2024/2025
-- **Last Updated**: January 2025
+- **Last Updated**: December 2025
+- **Configuration**: `packages/config/taxYears.ts`
+
+### Tax Year Versioning
+
+Tax rates are centralized in `taxYears.ts` for easy updates when new tax years are announced.
+
+**To update for a new tax year (e.g., YA 2026):**
+1. Add a new entry to `TAX_YEARS` object in `packages/config/taxYears.ts`
+2. Update `CURRENT_TAX_YEAR` constant
+3. Run golden scenario tests to verify impact
+4. Update this document with any formula changes
 
 ## Personal Income Tax
 
@@ -86,11 +97,18 @@ If any criterion is exceeded, audit is required.
 
 ## SOCSO
 
-SOCSO contributions are:
-- **Mandatory** for employees earning ≤ RM5,000/month
-- **Optional** for employees earning > RM5,000/month
+SOCSO (Social Security Organization) contributions are:
+- **Mandatory** for employees earning ≤ RM6,000/month (updated October 2024)
+- **Optional** for employees earning > RM6,000/month
 
-For v1, SOCSO is not included in calculations (marked for v2).
+### SOCSO Rates (Simplified)
+| | Rate |
+|--|------|
+| Employer | ~1.75% |
+| Employee | ~0.5% |
+
+Note: Actual SOCSO uses table-based contribution tiers. These rates are simplified for estimation.
+SOCSO is included in Sdn Bhd calculations as a cost deduction.
 
 ## Key Assumptions
 
@@ -105,17 +123,26 @@ For v1, SOCSO is not included in calculations (marked for v2).
 ## Limitations
 
 1. Does not account for:
-   - SOCSO contributions (v2)
    - Other tax reliefs (spouse, children, education) unless specified
    - Tax planning strategies
    - Loss carry-forwards
    - Capital allowances
-   - Other deductions
+   - Other business deductions
 
 2. Simplified calculations:
-   - EPF relief uses default RM7,000 (not actual EPF contributions)
-   - Assumes full dividend distribution
-   - Does not verify SME qualification criteria
+   - Assumes full dividend distribution by default (partial distribution supported)
+   - SME qualification warning shown but not enforced
+   - SOCSO uses simplified percentage rates (actual system uses tables)
+
+## Recent Updates
+
+### December 2025
+- Added tax year versioning structure (`taxYears.ts`)
+- EPF relief now auto-calculated from actual employee contributions (capped at RM7,000)
+- Added support for partial dividend distribution
+- Added SOCSO calculations (previously not included)
+- Added "tight margin" salary warning (when salary uses >80% of profit)
+- Added golden scenario integration tests for correctness validation
 
 ## Disclaimer
 

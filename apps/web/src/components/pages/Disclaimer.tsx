@@ -27,7 +27,7 @@ export default function Disclaimer() {
               <WarningCircle weight="duotone" className="h-5 w-5" />
               <AlertTitle className="text-lg font-semibold">Not Professional Advice</AlertTitle>
               <AlertDescription className="mt-2">
-                Open-Corporation.com is a calculation tool for informational purposes only. 
+                opentaxation.my is a calculation tool for informational purposes only.
                 It does not constitute professional tax, legal, or financial advice.
               </AlertDescription>
             </Alert>
@@ -80,7 +80,7 @@ export default function Disclaimer() {
 
             <div className="pt-4 border-t">
               <p className="text-sm text-muted-foreground">
-                By using Open-Corporation.com, you acknowledge that you have read, understood, and agree 
+                By using opentaxation.my, you acknowledge that you have read, understood, and agree
                 to this disclaimer.
               </p>
             </div>

@@ -2,11 +2,13 @@
 
 The boring but necessary details about getting this thing installed.
 
+---
+
 ## Prerequisites
 
 ### Node.js
 
-You need **Node.js 18.0.0 or higher**. Why? Because we use modern JavaScript features and that's what works.
+You need **Node.js 18.0.0 or higher**.
 
 **Check your version:**
 ```bash
@@ -35,7 +37,9 @@ npm --version
 
 Should be 10.0.0 or higher. If not, update Node.js.
 
-## Monorepo Setup Explained Simply
+---
+
+## Monorepo Setup Explained
 
 This is a **Turborepo monorepo**. What does that mean?
 
@@ -45,7 +49,7 @@ This is a **Turborepo monorepo**. What does that mean?
 
 **Structure:**
 ```
-Open-Corporation.com/
+opentaxation.my/
 ├── apps/
 │   └── web/          # The React app you see in browser
 ├── packages/
@@ -54,15 +58,17 @@ Open-Corporation.com/
 └── package.json      # Root config
 ```
 
-When you run `npm install` at the root, it installs dependencies for everything. Magic!
+When you run `npm install` at the root, it installs dependencies for everything.
+
+---
 
 ## Installation Steps
 
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd Open-Corporation.com
+git clone https://github.com/your-org/opentaxation.my
+cd opentaxation.my
 ```
 
 If you're forking or contributing, use your fork's URL instead.
@@ -77,7 +83,7 @@ npm install
 - Reads `package.json` files in root, apps/web, packages/core, packages/config
 - Downloads all dependencies to `node_modules/`
 - Links packages together using npm workspaces
-- Creates `package-lock.json` (don't commit this, it's auto-generated)
+- Creates `package-lock.json`
 
 **How long?** Depends on your internet. Usually 1-3 minutes.
 
@@ -96,7 +102,7 @@ npm install
 
 3. **Out of memory**:
    - Close other programs
-   - Try `npm install --legacy-peer-deps` (not ideal, but works)
+   - Try `npm install --legacy-peer-deps`
 
 4. **Still failing?**
    ```bash
@@ -134,25 +140,34 @@ This compiles TypeScript and checks for errors. If this fails, you have problems
 - Missing dependencies → Run `npm install` again
 - Path errors → Check your file structure
 
+---
+
 ## Environment Variables
 
-For the web app to work fully, you need Clerk authentication set up.
+### Development (Optional)
 
-### Development
+For cloud features (saved calculations, cross-device sync), create `apps/web/.env.local`:
 
-Create `apps/web/.env.local`:
 ```bash
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
+cp apps/web/.env.example apps/web/.env.local
 ```
 
-Get your key from [Clerk Dashboard](https://dashboard.clerk.com).
+Then add your Supabase credentials:
 
-**Don't have Clerk set up yet?** The app will show an error, but you can still see the UI. Authentication is optional for development (but required for production).
+```env
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+**Don't have Supabase?** No problem. The app works fully offline with localStorage. All core calculator functionality works without any backend.
 
 ### Production
 
 Set these in your hosting platform:
-- `VITE_CLERK_PUBLISHABLE_KEY` - Your production Clerk key (starts with `pk_live_`)
+- `VITE_SUPABASE_URL` - Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` - Your Supabase anon/public key
+
+---
 
 ## Development Server
 
@@ -163,12 +178,14 @@ npm run dev
 ```
 
 **What happens:**
-- Vite starts a dev server (usually on port 3000)
+- Vite starts a dev server on port 5173
 - Watches for file changes
 - Hot-reloads when you save files
 - Shows errors in browser and terminal
 
 **Stop the server:** Press `Ctrl+C` in the terminal.
+
+---
 
 ## Production Build
 
@@ -187,6 +204,29 @@ npm run preview
 
 This serves the production build locally so you can test it.
 
+---
+
+## PWA Installation
+
+The app is a **Progressive Web App (PWA)** that can be installed:
+
+### On Mobile
+1. Open in Safari (iOS) or Chrome (Android)
+2. Tap Share → "Add to Home Screen"
+3. Launch from home screen
+
+### On Desktop
+1. Open in Chrome/Edge
+2. Click the install icon in the address bar
+3. Or use browser menu → "Install App"
+
+**PWA Features:**
+- Works offline
+- Installs like a native app
+- Syncs data when online
+
+---
+
 ## Troubleshooting
 
 ### "Command not found: npm"
@@ -197,11 +237,11 @@ Node.js isn't installed or not in your PATH. Install Node.js properly.
 
 Run `npm install` again. Sometimes dependencies don't install correctly.
 
-### "Port 3000 already in use"
+### "Port 5173 already in use"
 
-Something else is using port 3000. Either:
+Something else is using port 5173. Either:
 - Kill the other process
-- Change the port in `apps/web/vite.config.ts`
+- Let Vite auto-select the next port
 
 ### "Permission denied"
 
@@ -222,6 +262,8 @@ npm install
 
 The monorepo structure might be broken. Make sure you're in the root directory and all folders exist.
 
+---
+
 ## What's Next?
 
 - [Quick Start Guide](./quick-start.md) - Get running in 5 minutes
@@ -231,4 +273,3 @@ The monorepo structure might be broken. Make sure you're in the root directory a
 ---
 
 **Still having issues?** Check the [Contributing Guide](../contributing/contributing.md) or open an issue on GitHub.
-

@@ -15,49 +15,127 @@ This is a **monorepo** built with **Turborepo**. That means:
 - Easier to refactor across packages
 - Better for open source (one repo to clone)
 
+---
+
 ## Project Structure
 
 ```
-Open-Corporation.com/
+opentaxation.my/
 ├── apps/
-│   └── web/                    # The React app (what users see)
+│   └── web/                         # React Frontend (Vite + TailwindCSS)
 │       ├── src/
-│       │   ├── components/     # UI components
-│       │   ├── pages/          # Page components
-│       │   ├── hooks/          # React hooks
-│       │   └── lib/            # Utilities
+│       │   ├── components/
+│       │   │   ├── calculator/      # Landing page components
+│       │   │   ├── mobile/          # Mobile-specific components
+│       │   │   │   ├── MobileTabLayout.tsx
+│       │   │   │   ├── MobileHeader.tsx
+│       │   │   │   └── MobileBottomTabs.tsx
+│       │   │   ├── sections/        # Main app sections
+│       │   │   │   ├── InputsSection/
+│       │   │   │   │   ├── index.tsx
+│       │   │   │   │   ├── ProfitInputSection.tsx
+│       │   │   │   │   ├── SdnBhdSettingsSection.tsx
+│       │   │   │   │   ├── AuditSection.tsx
+│       │   │   │   │   ├── ZakatSection.tsx
+│       │   │   │   │   ├── EducationalNotes.tsx
+│       │   │   │   │   ├── shared.tsx
+│       │   │   │   │   └── types.ts
+│       │   │   │   ├── ResultsSection.tsx
+│       │   │   │   └── LandingSection.tsx
+│       │   │   ├── ui/              # shadcn/ui primitives
+│       │   │   ├── InputField.tsx
+│       │   │   ├── Slider.tsx
+│       │   │   ├── TaxCard.tsx
+│       │   │   ├── RecommendationCard.tsx
+│       │   │   ├── CrossoverChart.tsx
+│       │   │   ├── WaterfallBreakdown.tsx
+│       │   │   ├── TaxBracketBreakdown.tsx
+│       │   │   ├── ReliefsSection.tsx
+│       │   │   ├── ShareModal.tsx
+│       │   │   └── Logo.tsx
+│       │   ├── contexts/            # React Context providers
+│       │   │   ├── AuthContext.tsx  # Supabase auth
+│       │   │   └── ThemeContext.tsx # Dark/light mode
+│       │   ├── hooks/               # Custom React hooks
+│       │   │   ├── useTaxCalculation.ts
+│       │   │   ├── useLocalStorage.ts
+│       │   │   ├── useShareableLink.ts
+│       │   │   ├── usePWAInstall.ts
+│       │   │   ├── useMediaQuery.ts
+│       │   │   └── useSavedCalculations.ts
+│       │   ├── lib/                 # Utilities
+│       │   │   ├── supabase.ts      # Supabase client
+│       │   │   ├── analytics.ts     # Analytics tracking
+│       │   │   └── utils.ts         # Helper functions
+│       │   ├── pages/               # Route pages
+│       │   │   ├── SinglePageApp.tsx
+│       │   │   ├── dashboard/       # Dashboard pages
+│       │   │   └── blog/            # Blog pages
+│       │   └── i18n/                # Internationalization
+│       │       └── locales/
+│       │           ├── en.ts        # English
+│       │           └── ms.ts        # Malay
 │       └── package.json
 │
 ├── packages/
-│   ├── core/                   # Tax calculation engine (pure TypeScript)
-│   │   ├── tax/               # Calculation functions
-│   │   ├── types.ts           # TypeScript types
-│   │   └── validation.ts      # Input validation
+│   ├── core/                        # Tax Calculation Engine
+│   │   ├── tax/
+│   │   │   ├── calculatePersonalTax.ts
+│   │   │   ├── calculateCorporateTax.ts
+│   │   │   ├── calculateSolePropScenario.ts
+│   │   │   ├── calculateSdnBhdScenario.ts
+│   │   │   ├── compareScenarios.ts
+│   │   │   ├── crossover.ts
+│   │   │   └── zakat.ts
+│   │   ├── utils/
+│   │   │   └── rounding.ts
+│   │   ├── types.ts
+│   │   ├── validation.ts
+│   │   └── constants.ts
 │   │
-│   └── config/                 # Tax configuration
+│   └── config/                      # Tax Configuration
 │       ├── personalTaxBrackets.ts
 │       ├── corporateTaxBrackets.ts
 │       ├── epfRules.ts
-│       └── ...
+│       ├── socsoRules.ts
+│       ├── auditRules.ts
+│       ├── dividendTax.ts
+│       ├── zakatRules.ts
+│       ├── defaultReliefs.ts
+│       └── taxYears.ts
 │
-└── package.json                # Root config (Turborepo)
+├── supabase/                        # Database schema
+│   └── migrations/
+│
+├── docs/                            # Documentation
+│   ├── api/
+│   ├── concepts/
+│   ├── getting-started/
+│   ├── how-to/
+│   └── design-system.md
+│
+└── package.json                     # Root config (Turborepo)
 ```
 
-## Why We Split It This Way
+---
+
+## Package Responsibilities
 
 ### `packages/config` - Tax Rules
 
 **What it does:** Contains all tax brackets, rates, and rules.
 
-**Why separate:** Tax rules change. By keeping them separate, we can update rates without touching calculation logic.
+**Why separate:** Tax rules change yearly. By keeping them separate, we can update rates without touching calculation logic.
 
-**Files:**
-- `personalTaxBrackets.ts` - Personal income tax brackets
-- `corporateTaxBrackets.ts` - Corporate tax brackets
-- `epfRules.ts` - EPF contribution rates
+**Key files:**
+- `personalTaxBrackets.ts` - YA 2024/2025 personal income tax brackets
+- `corporateTaxBrackets.ts` - Corporate tax rates (SME vs non-SME)
+- `epfRules.ts` - EPF contribution rates (employer 13%/12%, employee 11%)
+- `socsoRules.ts` - SOCSO contribution limits
 - `auditRules.ts` - Audit exemption criteria
-- `dividendTax.ts` - Dividend tax rules
-- `defaultReliefs.ts` - Default tax reliefs
+- `dividendTax.ts` - YA 2025 dividend surcharge rules
+- `zakatRules.ts` - Zakat calculation and nisab thresholds
+- `defaultReliefs.ts` - Standard tax reliefs
 
 **Key principle:** Configuration is separate from logic. Change rates without changing code.
 
@@ -65,19 +143,19 @@ Open-Corporation.com/
 
 **What it does:** Pure TypeScript functions that calculate tax. No React, no UI, just math.
 
-**Why separate:** 
+**Why separate:**
 - Can be used in other projects (CLI tools, APIs, etc.)
 - Easier to test (no React dependencies)
 - Clear separation of concerns
 
-**Files:**
-- `tax/calculatePersonalTax.ts` - Calculate personal income tax
-- `tax/calculateCorporateTax.ts` - Calculate corporate tax
+**Key files:**
 - `tax/calculateSolePropScenario.ts` - Calculate Enterprise scenario
 - `tax/calculateSdnBhdScenario.ts` - Calculate Sdn Bhd scenario
-- `tax/compareScenarios.ts` - Compare both scenarios
+- `tax/compareScenarios.ts` - Compare both and generate recommendation
+- `tax/crossover.ts` - Find crossover point
+- `tax/zakat.ts` - Zakat calculations
+- `validation.ts` - Input validation with error messages
 - `types.ts` - TypeScript interfaces
-- `validation.ts` - Input validation
 
 **Key principle:** Pure functions. Same input = same output. No side effects.
 
@@ -88,21 +166,25 @@ Open-Corporation.com/
 **Why separate:** UI changes frequently. Business logic (core) changes rarely.
 
 **Structure:**
-- `components/` - Reusable UI components
+- `components/` - Reusable UI components (modular architecture)
+- `contexts/` - Auth and Theme providers
+- `hooks/` - Custom hooks for state and calculations
 - `pages/` - Page-level components
-- `hooks/` - Custom React hooks (like `useTaxCalculation`)
-- `lib/` - UI utilities (analytics, error tracking)
+- `lib/` - Utilities and Supabase client
+- `i18n/` - Multi-language support (English, Malay)
 
 **Key principle:** UI is a thin layer over the calculation engine.
 
-## Data Flow
+---
 
-Here's how data flows through the app:
+## Data Flow
 
 ```
 User Input (Form)
     ↓
 Input Validation (validation.ts)
+    ↓
+LocalStorage Persistence (useLocalStorage hook)
     ↓
 Tax Calculation (core package)
     ├── calculateSolePropScenario()
@@ -111,234 +193,225 @@ Tax Calculation (core package)
 Comparison (compareScenarios())
     ↓
 Results Display (React components)
+    ↓
+Optional: Save to Supabase (useSavedCalculations hook)
 ```
 
 **Step by step:**
 
 1. **User enters numbers** in the input form
-2. **Input validation** checks for errors (negative numbers, etc.)
-3. **Tax calculation** runs both scenarios:
-   - Enterprise: Personal tax on profit
-   - Sdn Bhd: Company tax + Personal tax on salary + Dividends
-4. **Comparison** determines which is better
-5. **Results** displayed in real-time
+2. **Inputs persist** to localStorage automatically
+3. **Input validation** checks for errors (negative numbers, etc.)
+4. **Tax calculation** runs both scenarios in real-time
+5. **Comparison** determines which is better
+6. **Results** displayed instantly (no "Calculate" button)
+7. **Optionally** save to cloud if signed in
 
-**Why real-time?** We use React hooks (`useTaxCalculation`) that recalculate whenever inputs change. No "Calculate" button needed.
+---
 
-## Key Design Decisions
+## Key Design Patterns
 
-### Decision 1: Client-Side Calculations
+### 1. Callback Object Pattern
 
-**Why:** No backend needed. Everything runs in the browser.
+Instead of passing 20+ individual callbacks, we group them:
 
-**Pros:**
-- Fast (no network calls)
-- Private (data never leaves your browser)
-- Free to host (static site)
-- Works offline (after first load)
+```typescript
+// Before (prop drilling nightmare)
+<InputsSection
+  onBusinessProfitChange={...}
+  onOtherIncomeChange={...}
+  onMonthlySalaryChange={...}
+  // ... 15 more props
+/>
 
-**Cons:**
-- Can't save calculations server-side
-- Can't share links to specific calculations
-- Limited by browser performance (but tax calcs are fast)
+// After (clean Callback Object Pattern)
+const callbacks: InputCallbacks = {
+  onBusinessProfitChange: setBusinessProfit,
+  onOtherIncomeChange: setOtherIncome,
+  // ... all handlers in one object
+};
 
-**Verdict:** For v1, client-side is perfect. We can add backend later if needed.
+<InputsSection callbacks={callbacks} />
+```
 
-### Decision 2: Pure TypeScript Core
+### 2. Modular Section Components
 
-**Why:** Business logic should be framework-agnostic.
+Large components are split into focused sub-components:
 
-**Pros:**
-- Can use in other projects (Node.js, Deno, etc.)
-- Easier to test (no React dependencies)
-- Clear separation of concerns
+```
+InputsSection/
+├── index.tsx              # Orchestrator
+├── ProfitInputSection.tsx # Just profit inputs
+├── SdnBhdSettingsSection.tsx
+├── AuditSection.tsx
+├── ZakatSection.tsx
+├── EducationalNotes.tsx
+├── shared.tsx             # Reusable pieces
+└── types.ts               # Interfaces
+```
 
-**Cons:**
-- Can't use React hooks in core (but we don't need to)
+### 3. Mobile-First Responsive
 
-**Verdict:** Pure functions are easier to reason about and test.
+- Desktop: Side-by-side layout (inputs left, results right)
+- Mobile: Tab-based layout with bottom navigation
+- Uses `useIsMobile()` hook for conditional rendering
 
-### Decision 3: Monorepo with Turborepo
+### 4. Real-Time Calculations
 
-**Why:** Multiple packages that need to work together.
+No "Submit" button. Everything recalculates on input change:
 
-**Pros:**
-- Shared code between packages
-- Single repo to clone
-- Efficient builds (caching)
-- Easy refactoring across packages
+```typescript
+const comparison = useTaxCalculation(inputs);
+// Automatically recalculates when inputs change
+```
 
-**Cons:**
-- More complex setup (but Turborepo handles it)
-- Larger repo size
+---
 
-**Verdict:** For this project, monorepo makes sense. We have 3 packages that work together.
+## Key Technologies
 
-### Decision 4: TypeScript Everywhere
+### Frontend
+| Tech | Purpose |
+|------|---------|
+| React 18 | UI library |
+| TypeScript | Type safety |
+| Vite | Build tool |
+| TailwindCSS | Styling |
+| shadcn/ui | UI components |
+| Framer Motion | Animations |
+| Recharts | Charts |
+| i18next | Internationalization |
 
-**Why:** Type safety catches bugs before runtime.
+### Backend / Data
+| Tech | Purpose |
+|------|---------|
+| Supabase | Auth + Database |
+| localStorage | Offline persistence |
+| PWA | Offline support |
 
-**Pros:**
-- Fewer bugs
-- Better IDE support
-- Self-documenting code
-- Refactoring is safer
+### Monorepo
+| Tech | Purpose |
+|------|---------|
+| Turborepo | Build system |
+| npm workspaces | Package management |
 
-**Cons:**
-- More verbose (but worth it)
-- Learning curve (but TypeScript is common now)
+---
 
-**Verdict:** TypeScript is worth it. The type safety saves time in the long run.
+## Authentication Flow
+
+```
+App Load
+    ↓
+Check Supabase Session
+    ├── Has session → Load user, enable cloud features
+    └── No session → Guest mode (localStorage only)
+    ↓
+User can:
+    ├── Use calculator (no auth required)
+    ├── Download PDF (no auth required)
+    ├── Share via URL (no auth required)
+    └── Save calculations (auth required)
+```
+
+**Guest users get:**
+- Full calculator functionality
+- PDF export
+- URL sharing
+- localStorage persistence
+
+**Signed-in users get:**
+- Everything above, plus:
+- Cloud-saved calculations
+- Cross-device sync
+- Tax calendar
+
+---
 
 ## Where to Find Things
 
 ### "I want to change tax rates"
-
 **File:** `packages/config/personalTaxBrackets.ts` or `corporateTaxBrackets.ts`
 
-**What to change:** The bracket arrays. Make sure brackets don't overlap and cover all ranges.
-
-**Test it:** Run `npm run test` to make sure calculations still work.
-
 ### "I want to add a new calculation"
-
-**File:** `packages/core/tax/` - Create a new file or add to existing one
-
-**Example:** Want to calculate SOCSO? Create `calculateSOCSO.ts` in `packages/core/tax/`
-
-**Export it:** Add to `packages/core/index.ts` so others can use it
+**File:** `packages/core/tax/` - Create a new file
 
 ### "I want to change the UI"
-
-**File:** `apps/web/src/components/` or `apps/web/src/pages/`
-
-**Styling:** Uses TailwindCSS. Check `apps/web/tailwind.config.js` for theme settings.
-
-**Components:** Uses shadcn/ui components. Check `apps/web/src/components/ui/` for base components.
+**File:** `apps/web/src/components/`
 
 ### "I want to add a new input field"
-
 **Files:**
-1. `apps/web/src/components/InputField.tsx` - The component (probably already exists)
-2. `apps/web/src/pages/SinglePageApp.tsx` - Add state and handler
-3. `packages/core/types.ts` - Add to `TaxCalculationInputs` interface if needed
+1. `apps/web/src/components/sections/InputsSection/` - Add to appropriate section
+2. `apps/web/src/hooks/useLocalStorage.ts` - Add to StoredInputs type
+3. `packages/core/types.ts` - Add to TaxCalculationInputs
 
 ### "I want to understand how calculations work"
+**Start here:** `packages/core/tax/calculateSolePropScenario.ts`
 
-**Start here:** `packages/core/tax/calculateSolePropScenario.ts` - Simple scenario, easy to understand
-
-**Then read:** `packages/core/tax/calculateSdnBhdScenario.ts` - More complex, but follows same pattern
-
-**Finally:** `packages/core/tax/compareScenarios.ts` - Compares both scenarios
-
-### "I want to debug why calculations are wrong"
-
+### "I want to debug calculations"
 **Steps:**
-1. Check inputs: Are they what you expect? (add `console.log`)
-2. Check tax brackets: Are rates correct? (`packages/config/`)
-3. Check calculation logic: Step through the code (`packages/core/tax/`)
-4. Check rounding: Are numbers rounded correctly? (`packages/core/utils/rounding.ts`)
+1. Check inputs in React DevTools
+2. Check tax brackets in `packages/config/`
+3. Step through calculation logic in `packages/core/tax/`
+4. Check rounding in `packages/core/utils/rounding.ts`
 
-**Pro tip:** Write a test case that reproduces the bug, then fix it.
+---
 
-## Technology Stack
+## Testing Strategy
 
-### Frontend
-- **React 18** - UI library (industry standard)
-- **TypeScript** - Type safety (catches bugs early)
-- **Vite** - Build tool (fast, simple)
-- **TailwindCSS** - Styling (utility-first, fast to write)
-- **shadcn/ui** - UI components (accessible, customizable)
-- **Framer Motion** - Animations (smooth, performant)
-- **Recharts** - Charts (for crossover graph)
+| Test Type | Location | Framework |
+|-----------|----------|-----------|
+| Unit (calculations) | `packages/core/**/__tests__/` | Vitest |
+| Unit (config) | `packages/config/__tests__/` | Vitest |
+| Component | `apps/web/src/**/__tests__/` | Vitest + RTL |
+| Integration | Golden scenarios in core | Vitest |
 
-### Backend/Logic
-- **Pure TypeScript** - No backend needed (client-side calculations)
-- **Vitest** - Testing (fast, Vite-native)
+**Run all tests:**
+```bash
+npm run test
+```
 
-### Monorepo
-- **Turborepo** - Build system (caching, parallel builds)
-- **npm workspaces** - Package management (built into npm)
+---
 
 ## Build Process
 
 **Development:**
 ```bash
 npm run dev
+# Starts Vite at http://localhost:5173
 ```
-- Starts Vite dev server
-- Watches for changes
-- Hot-reloads on save
 
 **Production:**
 ```bash
 npm run build
+# Outputs to apps/web/dist/
+# Includes PWA service worker
 ```
-- Compiles TypeScript
-- Bundles JavaScript
-- Optimizes assets
-- Outputs to `apps/web/dist/`
 
 **Testing:**
 ```bash
 npm run test
 ```
-- Runs Vitest tests
-- Checks calculation accuracy
-- Validates edge cases
 
-## Code Style
-
-**TypeScript:** Strict mode enabled. No `any` types (mostly).
-
-**React:** Functional components, hooks, no class components.
-
-**Styling:** TailwindCSS utility classes. No CSS-in-JS (keeps it simple).
-
-**Naming:**
-- Components: PascalCase (`TaxCard.tsx`)
-- Functions: camelCase (`calculatePersonalTax`)
-- Files: camelCase for utilities, PascalCase for components
-- Types: PascalCase (`TaxCalculationInputs`)
-
-**Comments:** Explain **why**, not **what**. Code should be self-documenting.
-
-## Testing Strategy
-
-**Unit tests:** Test calculation functions in isolation
-- Location: `packages/core/tax/__tests__/`
-- Framework: Vitest
-- Focus: Accuracy of calculations
-
-**Component tests:** Test UI components (if we add them)
-- Location: `apps/web/src/components/__tests__/`
-- Framework: Vitest + React Testing Library
-- Focus: Component behavior
-
-**Integration tests:** Test full flows (if we add them)
-- Test: User enters inputs → sees correct results
-- Focus: End-to-end scenarios
-
-**Current state:** We have unit tests for calculations. Component tests are minimal (but we can add more).
+---
 
 ## Future Improvements
 
 **Things we might add:**
-- Backend API (to save calculations)
-- User accounts (to save multiple scenarios)
-- More tax rules (SOCSO, other reliefs)
-- Export to Excel/CSV
-- Comparison history
-- Tax year selector (when rates change)
+- Tax news & updates
+- What-if scenarios
+- Multi-year planning
+- Partner referrals
+- Accountant directory
 
 **Things we probably won't add:**
-- Mobile app (web app works on mobile)
+- Native mobile app (PWA works great)
 - Desktop app (Electron is heavy)
-- Multi-language (English is fine for now)
+- Complex tax scenarios (keep it simple)
+
+---
 
 ## Contributing
 
-Want to add something? Read [Contributing Guide](../contributing/contributing.md) first.
+Want to add something? Read [Contributing Guide](../contributing/contributing.md).
 
 **Quick checklist:**
 1. Understand the architecture (you're reading this, good!)
@@ -347,8 +420,3 @@ Want to add something? Read [Contributing Guide](../contributing/contributing.md
 4. Write tests
 5. Update documentation
 6. Submit PR
-
----
-
-**Still confused?** Check the [API Reference](../api/core-package.md) for specific function documentation, or read the code (it's well-commented, we promise).
-

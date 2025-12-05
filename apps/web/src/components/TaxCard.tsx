@@ -1,4 +1,5 @@
 import { useState, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -58,6 +59,7 @@ function TaxCard({
   personalTaxableIncome,
   zakat,
 }: TaxCardProps) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Safeguard against NaN/undefined values
@@ -74,28 +76,28 @@ function TaxCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className={`h-full border-border/50 shadow-sm hover:shadow-md transition-all duration-200 hover:border-border active:scale-[0.99] ${hasWarning ? 'border-amber-500/50' : ''} ${className}`}>
+      <Card className={`h-full border-border/50 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 hover:border-primary/20 ${hasWarning ? 'border-amber-500/50' : ''} ${className}`}>
         {hasWarning && warningText && (
-          <div className="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2">
+          <div className="bg-destructive/5 border-b border-destructive/20 px-4 py-2.5">
             <div className="flex items-center gap-2">
-              <Warning weight="duotone" className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-              <p className="text-xs text-amber-700/90 dark:text-amber-400/90">{warningText}</p>
+              <Warning weight="duotone" className="h-4 w-4 text-destructive flex-shrink-0" />
+              <p className="text-xs text-destructive/90">{warningText}</p>
             </div>
           </div>
         )}
         <CardHeader className="pb-4 px-5 pt-5">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-semibold">{title}</CardTitle>
-            <Badge variant="secondary" className="text-xs font-medium bg-muted/50">
-              {title === 'Enterprise' ? 'Sole Prop' : 'Company'}
+            <CardTitle className="font-display text-base font-semibold">{title}</CardTitle>
+            <Badge variant="default" className="text-xs font-medium">
+              {title === 'Enterprise' || title === t('results.enterprise') ? t('taxCard.soleProp') : t('taxCard.company')}
             </Badge>
           </div>
-          <CardDescription className="text-xs mt-1">Tax breakdown</CardDescription>
+          <CardDescription className="text-xs mt-1">{t('taxCard.taxBreakdown')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5 px-5 pb-5">
           <div className="space-y-4">
             <div className="flex justify-between items-center py-2 gap-2">
-              <span className="text-xs text-muted-foreground font-medium flex-shrink-0">Total Tax Paid</span>
+              <span className="text-xs text-muted-foreground font-medium flex-shrink-0">{t('taxCard.totalTaxPaid')}</span>
               <span className={`font-numbers font-semibold text-foreground truncate ${safeTax >= 10_000_000 ? 'text-base' : 'text-lg'}`}>
                 {formatCurrency(safeTax)}
               </span>
@@ -107,10 +109,10 @@ function TaxCard({
                 <Heart weight="duotone" className="h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                    Zakat saves {formatCurrency(zakat.taxBenefit)}
+                    {t('taxCard.zakatSaves')} {formatCurrency(zakat.taxBenefit)}
                   </p>
                   <p className="text-[10px] text-emerald-600/70 dark:text-emerald-400/70">
-                    {title === 'Enterprise' ? '100% tax rebate' : '2.5% deduction'}
+                    {title === 'Enterprise' || title === t('results.enterprise') ? t('taxCard.taxRebate100') : t('taxCard.deduction25')}
                   </p>
                 </div>
               </div>
@@ -120,7 +122,7 @@ function TaxCard({
 
             <div className="space-y-3 pt-1">
               <div className="flex justify-between items-baseline gap-2">
-                <span className="text-xs text-muted-foreground font-medium flex-shrink-0">Net Cash to You</span>
+                <span className="text-xs text-muted-foreground font-medium flex-shrink-0">{t('taxCard.netCashToYou')}</span>
                 <span className={`font-numbers font-bold text-foreground tracking-tight truncate ${
                   safeNetCash >= 100_000_000 ? 'text-xl' : safeNetCash >= 10_000_000 ? 'text-2xl' : 'text-3xl'
                 }`}>
@@ -129,7 +131,7 @@ function TaxCard({
               </div>
               <div className="flex justify-end">
                 <Badge variant="secondary" className="text-xs font-normal bg-muted/50 text-muted-foreground px-2 py-0.5">
-                  {(safeEffectiveRate * 100).toFixed(2)}% effective rate
+                  {(safeEffectiveRate * 100).toFixed(2)}% {t('taxCard.effectiveRate')}
                 </Badge>
               </div>
             </div>
@@ -147,12 +149,12 @@ function TaxCard({
                   {isExpanded ? (
                     <>
                       <CaretUp weight="bold" className="h-3.5 w-3.5" />
-                      Hide Details
+                      {t('taxCard.hideDetails')}
                     </>
                   ) : (
                     <>
                       <CaretDown weight="bold" className="h-3.5 w-3.5" />
-                      Show Breakdown
+                      {t('taxCard.showBreakdown')}
                     </>
                   )}
                 </Button>
@@ -180,7 +182,7 @@ function TaxCard({
                   {companyWaterfall && (
                     <WaterfallBreakdown
                       steps={companyWaterfall}
-                      title="Company Level"
+                      title={t('taxCard.companyLevel')}
                       className="mb-4"
                     />
                   )}
@@ -188,7 +190,7 @@ function TaxCard({
                   {personalWaterfall && (
                     <WaterfallBreakdown
                       steps={personalWaterfall}
-                      title="Your Personal Level"
+                      title={t('taxCard.personalLevel')}
                     />
                   )}
 
@@ -197,7 +199,7 @@ function TaxCard({
                     <div className="mt-4 pt-4 border-t border-border/50 min-w-0">
                       <TaxBracketBreakdownComponent
                         breakdown={taxBracketBreakdown}
-                        title="How Your Tax is Calculated"
+                        title={t('taxCard.howTaxCalculated')}
                         taxableIncome={taxableIncome}
                       />
                     </div>
@@ -208,7 +210,7 @@ function TaxCard({
                     <div className="mt-4 pt-4 border-t border-border/50 min-w-0">
                       <TaxBracketBreakdownComponent
                         breakdown={corporateTaxBracketBreakdown}
-                        title="Corporate Tax Calculation"
+                        title={t('taxCard.corporateTaxCalc')}
                         taxableIncome={companyTaxableProfit}
                         isCorporate
                       />
@@ -219,7 +221,7 @@ function TaxCard({
                     <div className="mt-4 pt-4 border-t border-border/50 min-w-0">
                       <TaxBracketBreakdownComponent
                         breakdown={personalTaxBracketBreakdown}
-                        title="Your Personal Tax Calculation"
+                        title={t('taxCard.personalTaxCalc')}
                         taxableIncome={personalTaxableIncome}
                       />
                     </div>
@@ -230,7 +232,7 @@ function TaxCard({
                     <div className="mt-4 pt-4 border-t border-border/50">
                       <div className="flex items-center gap-1.5 mb-2">
                         <Lightbulb weight="duotone" className="h-3.5 w-3.5 text-amber-500" />
-                        <p className="text-xs font-semibold text-muted-foreground">Key Insights</p>
+                        <p className="text-xs font-semibold text-muted-foreground">{t('taxCard.keyInsights')}</p>
                       </div>
                       <div className="space-y-1.5">
                         {insights.map((insight, idx) => (
@@ -256,7 +258,7 @@ function TaxCard({
               <>
                 <Separator className="my-4 bg-border/50" />
                 <div className="space-y-2">
-                  <p className="text-xs font-semibold text-muted-foreground mb-2">Breakdown</p>
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">{t('taxCard.breakdown')}</p>
                   {Object.entries(breakdown).map(([key, value], idx) => (
                     <motion.div
                       key={key}

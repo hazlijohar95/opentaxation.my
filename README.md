@@ -12,7 +12,7 @@
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8.svg)](https://web.dev/progressive-web-apps/)
 [![Tax Year](https://img.shields.io/badge/Tax%20Year-YA%202024%2F2025-orange.svg)]()
 
-[**Live Demo**](https://opentaxation.my) &nbsp;&bull;&nbsp; [**Documentation**](docs/) &nbsp;&bull;&nbsp; [**Report Bug**](https://github.com/your-repo/issues)
+[**Live Demo**](https://opentaxation.my) &nbsp;&bull;&nbsp; [**Documentation**](docs/) &nbsp;&bull;&nbsp; [**Report Bug**](https://github.com/hazlijohar95/opentaxation.my/issues)
 
 </div>
 
@@ -59,20 +59,21 @@
 
 | Feature | Status | Description |
 |:--------|:------:|:------------|
-| Real-time Calculations | :white_check_mark: | Results update as you type |
+| Real-time Calculations | :white_check_mark: | Results update as you type (no login required) |
 | Malaysia Tax Brackets | :white_check_mark: | LHDN YA 2024/2025 rates |
 | EPF Integration | :white_check_mark: | Employer (13%/12%) + Employee (11%) |
 | Zakat Calculator | :white_check_mark: | 100% rebate (Enterprise) / 2.5% deduction (Sdn Bhd) |
 | YA 2025 Dividend Surcharge | :white_check_mark: | 2% on dividends > RM100k |
-| Tax Calendar | :white_check_mark: | Never miss a deadline |
-| PDF Export | :white_check_mark: | Professional reports |
-| Save Calculations | :white_check_mark: | Requires account (Supabase) |
+| PDF Export | :white_check_mark: | Download professional reports (no login required) |
+| Share via URL | :white_check_mark: | Share calculations with anyone |
 | Crossover Chart | :white_check_mark: | Visual profit threshold |
 | PWA / Offline | :white_check_mark: | Install on iOS/Android |
 | Dark Mode | :white_check_mark: | Easy on the eyes |
 | Mobile Responsive | :white_check_mark: | Works everywhere |
+| Save Calculations | :white_check_mark: | Cloud sync (requires account) |
+| Tax Calendar | :white_check_mark: | Never miss a deadline (requires account) |
 | Partner Referrals | :hourglass_flowing_sand: | Coming soon |
-| SOCSO Calculations | :hourglass_flowing_sand: | Coming in v2 |
+| Tax News & Updates | :hourglass_flowing_sand: | Stay informed on policy changes |
 
 ---
 
@@ -116,7 +117,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-repo/opentaxation.my.git
+git clone https://github.com/hazlijohar95/opentaxation.my.git
 
 # Navigate to the project
 cd opentaxation.my
@@ -205,7 +206,6 @@ opentaxation.my/
 |   who actually understand tax.                                   |
 |                                                                  |
 |   * Uses official LHDN tax brackets (YA 2024/2025)               |
-|   * 100% client-side - your data never leaves your browser       |
 |   * Open source - verify the calculations yourself               |
 |   * Tested against real tax scenarios                            |
 |                                                                  |
@@ -216,17 +216,35 @@ opentaxation.my/
 
 ---
 
+## Privacy & Data
+
+**Guest users (no account):**
+- Use the full calculator without signing in
+- 100% client-side calculations - your data never leaves your browser
+- Inputs saved to your browser's localStorage only
+- Download PDF reports and share results via URL
+
+**Logged-in users (optional):**
+- Everything above, plus:
+- Save calculations to your secure dashboard
+- Access calculation history from any device
+- Data stored in encrypted Supabase database
+
+> Your data is yours. We don't sell, share, or monetize user data.
+
+---
+
 ## Roadmap
 
 ```
 v1.0 (Current)                   v1.1 (Now)                      v2.0 (Future)
      |                                |                               |
      |                                |                               |
-     +-- Core calculator              +-- Zakat integration           +-- SOCSO calculations
-     +-- EPF integration              +-- Tax calendar                +-- Group company support
+     +-- Core calculator              +-- Zakat integration           +-- Tax news & updates
+     +-- EPF integration              +-- Tax calendar                +-- What-if scenarios
      +-- PDF export                   +-- Mobile redesign             +-- Multi-year planning
-     +-- PWA ready                    +-- Partner referrals           +-- International expansion
-     +-- Crossover chart              +-- Lead capture
+     +-- PWA ready                    +-- Partner referrals           +-- Case study library
+     +-- Crossover chart              +-- Lead capture                +-- Accountant directory
 ```
 
 ---
@@ -306,6 +324,6 @@ MIT License - use freely, contribute back.
 
 **Made with care by Malaysian Chartered Accountants**
 
-[Live Demo](https://opentaxation.my) &nbsp;&bull;&nbsp; [Report Bug](https://github.com/your-repo/issues) &nbsp;&bull;&nbsp; [Documentation](docs/)
+[Live Demo](https://opentaxation.my) &nbsp;&bull;&nbsp; [Report Bug](https://github.com/hazlijohar95/opentaxation.my/issues) &nbsp;&bull;&nbsp; [Documentation](docs/)
 
 </div>

@@ -19,17 +19,38 @@ import { calculatePersonalTax } from './calculatePersonalTax';
 import type { TaxCalculationInputs, SdnBhdScenarioResult, WaterfallStep, TaxBracketBreakdown, ZakatResult } from '../types';
 
 /**
- * Calculate Sdn Bhd scenario
+ * Calculate Sdn Bhd (Private Limited Company) scenario
  *
- * Key improvements:
- * - EPF relief is auto-calculated from actual employee EPF contributions (capped at RM7,000)
- * - Supports partial dividend distribution (retaining earnings in company)
- * - Allows negative net cash to show when scenarios result in loss
+ * ## Cash Flow Formula
  *
- * Zakat Treatment (Sdn Bhd/Company):
+ * **Company Side:**
+ * ```
+ * Taxable Profit = Business Profit - Salary - Employer EPF - Employer SOCSO - Zakat Deduction
+ * Corporate Tax = Progressive rate on Taxable Profit (15% up to RM150k, 17% RM150k-600k, 24% above)
+ * Post-Tax Profit = Taxable Profit - Corporate Tax
+ * Dividends = Post-Tax Profit × Distribution %
+ * ```
+ *
+ * **Personal Side:**
+ * ```
+ * Take-Home Salary = Gross Salary - Employee EPF (11%) - Employee SOCSO
+ * Personal Tax = Progressive rate on (Salary + Other Income - Reliefs)
+ * Net Cash = Take-Home Salary + Other Income - Personal Tax + Dividends - Dividend Tax - Compliance - Zakat
+ * ```
+ *
+ * ## Key Features
+ * - EPF relief auto-calculated from actual contributions (capped at RM7,000)
+ * - Supports partial dividend distribution (retaining earnings)
+ * - Checks salary affordability against company profit
+ * - Allows negative net cash to show loss scenarios
+ *
+ * ## Zakat Treatment (Sdn Bhd/Company)
  * - Zakat is a TAX DEDUCTION from aggregate income (NOT rebate)
  * - Maximum deduction: 2.5% of aggregate income
  * - Reference: Section 44(11A) Income Tax Act 1967
+ *
+ * @param inputs - Calculation inputs including profit, salary, compliance costs
+ * @returns Complete Sdn Bhd scenario results with waterfall breakdowns
  */
 export function calculateSdnBhdScenario(
   inputs: Required<Pick<TaxCalculationInputs, 'businessProfit' | 'monthlySalary' | 'otherIncome' | 'complianceCosts'>> &

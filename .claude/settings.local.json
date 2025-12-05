@@ -37,7 +37,14 @@
       "Bash(node -e:*)",
       "Bash(for hook in useErrorToast useLocalStorage useMediaQuery usePWAInstall useSavedCalculations useShareableLink useSupabase useTaxCalculation)",
       "Bash(do echo \"=== $hook ===\")",
-      "Bash(done)"
+      "Bash(done)",
+      "mcp__ide__getDiagnostics",
+      "WebSearch",
+      "Bash(npx create-strapi-app@latest:*)",
+      "Bash(claude mcp add:*)",
+      "mcp__figma__get_design_context",
+      "mcp__figma__get_screenshot",
+      "mcp__figma__get_metadata"
     ],
     "deny": [],
     "ask": []

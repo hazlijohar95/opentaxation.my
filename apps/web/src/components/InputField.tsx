@@ -139,7 +139,7 @@ function InputField({
           aria-label={prefix ? `${label} in ${prefix}` : label}
           className={cn(
             prefix && "pl-10",
-            "h-12 sm:h-10 text-base sm:text-sm touch-target",
+            "h-12 sm:h-11 text-base sm:text-sm touch-target",
             "focus:ring-2 focus:ring-offset-0",
             "transition-all duration-200",
             "active:scale-[0.98]",

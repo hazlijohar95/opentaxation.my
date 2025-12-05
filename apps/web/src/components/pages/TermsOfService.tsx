@@ -24,14 +24,14 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-xl font-display font-semibold mb-3">1. Acceptance of Terms</h2>
               <p>
-                By accessing and using Open-Corporation.com, you accept and agree to be bound by these Terms of Service.
+                By accessing and using opentaxation.my, you accept and agree to be bound by these Terms of Service.
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-display font-semibold mb-3">2. Service Description</h2>
               <p>
-                Open-Corporation.com provides a tax calculation tool to help users compare Enterprise and Sdn Bhd 
+                opentaxation.my provides a tax calculation tool to help users compare Enterprise and Sdn Bhd
                 business structures. The service is provided "as is" for informational purposes only.
               </p>
             </section>
@@ -59,7 +59,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-xl font-display font-semibold mb-3">5. Limitation of Liability</h2>
               <p>
-                Open-Corporation.com and its operators shall not be liable for any indirect, incidental, 
+                opentaxation.my and its operators shall not be liable for any indirect, incidental,
                 special, or consequential damages arising from your use of the service.
               </p>
             </section>
@@ -67,7 +67,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-xl font-display font-semibold mb-3">6. Changes to Terms</h2>
               <p>
-                We reserve the right to modify these terms at any time. Continued use of the service 
+                We reserve the right to modify these terms at any time. Continued use of the service
                 constitutes acceptance of modified terms.
               </p>
             </section>
@@ -77,8 +77,8 @@ export default function TermsOfService() {
               <p>
                 For questions about these Terms, contact us at:
                 <br />
-                <a href="mailto:legal@open-corporation.com" className="text-[var(--blue)] hover:underline">
-                  legal@open-corporation.com
+                <a href="mailto:coding@hazli.dev" className="text-primary hover:underline">
+                  coding@hazli.dev
                 </a>
               </p>
             </section>

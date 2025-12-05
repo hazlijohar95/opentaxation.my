@@ -29,6 +29,8 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@types/dompurify": "^3.0.5",
+    "dompurify": "^3.3.0",
     "framer-motion": "^12.23.25",
     "phosphor-react": "^1.4.1"
   }

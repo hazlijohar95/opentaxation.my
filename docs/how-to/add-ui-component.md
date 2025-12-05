@@ -1,6 +1,8 @@
 # How to Add a New UI Component
 
-Guide to adding new UI components to the web app (because sometimes you need custom components).
+Guide to adding new UI components to the web app.
+
+---
 
 ## When to Add a Component
 
@@ -13,6 +15,8 @@ Guide to adding new UI components to the web app (because sometimes you need cus
 - If shadcn/ui already has it (use that instead)
 - If you can use existing components (compose them)
 - If it's a one-off (just inline it)
+
+---
 
 ## Component Structure
 
@@ -35,7 +39,7 @@ export default function MyComponent({
 }: MyComponentProps) {
   return (
     <Card className={cn("border", className)}>
-      <CardContent className="p-4">
+      <CardContent className="p-5 sm:p-6">
         <h3 className="font-semibold">{title}</h3>
         <p className="font-numbers text-2xl">{value}</p>
       </CardContent>
@@ -50,6 +54,8 @@ export default function MyComponent({
 - Use shadcn/ui components as base
 - Use TailwindCSS for styling
 - Export as default
+
+---
 
 ## Step-by-Step Guide
 
@@ -77,7 +83,7 @@ export default function ProfitDisplay({
   className,
 }: ProfitDisplayProps) {
   return (
-    <Card className={cn("border", className)}>
+    <Card className={cn("border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300", className)}>
       <CardHeader>
         <CardTitle className="text-sm">{label}</CardTitle>
       </CardHeader>
@@ -103,25 +109,49 @@ export default function ProfitDisplay({
 ```
 
 **Theme colors:**
-- `foreground` - Text color
-- `background` - Background color
-- `muted` - Muted text/background
-- `border` - Border color
-- `--blue` - Primary blue (use sparingly)
+
+| Token | Usage |
+|-------|-------|
+| `foreground` | Text color |
+| `background` | Background color |
+| `muted` | Muted text/background |
+| `border` | Border color |
+| `primary` | Primary accent |
+| `emerald-500` | Success/Sdn Bhd |
+| `blue-500` | Info/Enterprise |
+| `destructive` | Warnings/errors |
 
 **Custom utilities:**
 - `font-display` - Instrument Serif (headings)
 - `font-numbers` - Inter with tabular numbers
-- `touch-target` - Minimum 44px touch target
+- `pb-safe` - Safe area padding (mobile)
 
-### Step 3: Add Accessibility
+### Step 3: Touch Targets
+
+All interactive elements need **48px minimum** touch target:
+
+```typescript
+// Input fields
+<Input className="h-12 sm:h-11" />
+
+// Buttons
+<Button className="min-h-[48px]" />
+
+// Toggle buttons
+<button className="min-h-[48px] py-3.5 px-4" />
+
+// Collapsible headers
+<div className="min-h-[48px] p-4" />
+```
+
+### Step 4: Add Accessibility
 
 **Required attributes:**
 
 ```typescript
 <button
   aria-label="Close dialog"
-  className="touch-target"
+  className="min-h-[48px]"
 >
   <XIcon />
 </button>
@@ -139,11 +169,11 @@ export default function ProfitDisplay({
 - All interactive elements need `aria-label`
 - Form inputs need labels (use `Label` component)
 - Use `sr-only` for screen-reader-only text
-- Minimum touch target: 44px (`touch-target` class)
+- Minimum touch target: 48px
 
-### Step 4: Add Animations (Optional)
+### Step 5: Add Animations
 
-**Use Framer Motion:**
+**Use Framer Motion with our timing standards:**
 
 ```typescript
 import { motion } from 'framer-motion';
@@ -151,20 +181,42 @@ import { motion } from 'framer-motion';
 <motion.div
   initial={{ opacity: 0, y: 10 }}
   animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.3 }}
+  transition={{ delay: 0.02, duration: 0.3 }}
 >
   {/* Content */}
 </motion.div>
 ```
 
-**Common patterns:**
-- Fade in: `opacity: 0 → 1`
-- Slide up: `y: 10 → 0`
-- Duration: 0.2-0.4s (fast, not slow)
+**Animation Standards:**
 
-### Step 5: Use the Component
+| Property | Value | Rationale |
+|----------|-------|-----------|
+| Initial state | `opacity: 0, y: 10` | Subtle upward fade |
+| Duration | `0.3s` | Smooth but quick |
+| Stagger delay | `0.02s` increments | Fast cascade |
+| Easing | `ease-out` | Natural deceleration |
 
-**Import and use:**
+**Stagger sequence example:**
+
+```typescript
+const sections = [
+  { component: <SectionA />, delay: 0.02 },
+  { component: <SectionB />, delay: 0.04 },
+  { component: <SectionC />, delay: 0.06 },
+];
+
+{sections.map(({ component, delay }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay, duration: 0.3 }}
+  >
+    {component}
+  </motion.div>
+))}
+```
+
+### Step 6: Use the Component
 
 ```typescript
 import ProfitDisplay from '@/components/ProfitDisplay';
@@ -179,7 +231,7 @@ function MyPage() {
 }
 ```
 
-### Step 6: Test Responsively
+### Step 7: Test Responsively
 
 **Test on:**
 - Mobile (< 640px)
@@ -193,18 +245,70 @@ function MyPage() {
 </div>
 ```
 
+---
+
+## Callback Object Pattern
+
+For components with many callbacks, use the **Callback Object Pattern**:
+
+```typescript
+// Define callback interface
+interface MyCallbacks {
+  onValueChange: (value: number) => void;
+  onModeChange: (mode: string) => void;
+  onToggle: (enabled: boolean) => void;
+}
+
+// Component receives callbacks object
+interface MySectionProps {
+  data: MyData;
+  callbacks: MyCallbacks;
+}
+
+function MySection({ data, callbacks }: MySectionProps) {
+  return (
+    <div>
+      <Input onChange={callbacks.onValueChange} />
+      <Select onChange={callbacks.onModeChange} />
+      <Switch onCheckedChange={callbacks.onToggle} />
+    </div>
+  );
+}
+
+// Usage - define callbacks once
+const myCallbacks: MyCallbacks = {
+  onValueChange: setValue,
+  onModeChange: setMode,
+  onToggle: setEnabled,
+};
+
+<MySection data={data} callbacks={myCallbacks} />
+```
+
+**Benefits:**
+- Cleaner component interfaces
+- Easier to pass down through multiple levels
+- Self-documenting callback groups
+
+---
+
 ## Using shadcn/ui Components
 
 **Available components:** Check `apps/web/src/components/ui/`
 
 **Common components:**
-- `Button` - Buttons with variants
-- `Card` - Card container
-- `Input` - Text input
-- `Label` - Form labels
-- `Badge` - Badge component
-- `Slider` - Range slider
-- `Tooltip` - Tooltip component
+
+| Component | Usage |
+|-----------|-------|
+| `Button` | Buttons with variants |
+| `Card` | Card container |
+| `Input` | Text input |
+| `Label` | Form labels |
+| `Badge` | Status badges |
+| `Slider` | Range slider |
+| `Tooltip` | Help text |
+| `Switch` | Toggle switch |
+| `Separator` | Visual divider |
 
 **Example:**
 
@@ -212,63 +316,40 @@ function MyPage() {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-<Card>
-  <CardContent>
-    <Button variant="default">Click me</Button>
+<Card className="hover:shadow-lg transition-all duration-300">
+  <CardContent className="p-5 sm:p-6">
+    <Button variant="default" className="min-h-[48px]">
+      Click me
+    </Button>
   </CardContent>
 </Card>
 ```
 
-**Variants:** Check component file for available variants.
+---
 
-## Styling Guidelines
+## Hover & Interactive States
 
-### Use TailwindCSS
-
-**Don't use:**
-- Inline styles (`style={{}}`)
-- CSS modules (unless necessary)
-- Global CSS (use Tailwind utilities)
-
-**Do use:**
-- Tailwind utility classes
-- `cn()` for conditional classes
-- Theme colors from Tailwind config
-
-### Responsive Design
-
-**Mobile-first approach:**
-
-```typescript
-// Mobile: small, Desktop: large
-<div className="text-sm lg:text-lg">
-
-// Mobile: stacked, Desktop: side-by-side
-<div className="flex flex-col lg:flex-row">
-
-// Mobile: full width, Desktop: max width
-<div className="w-full lg:max-w-2xl">
+**Card hover:**
+```css
+hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300
 ```
 
-### Typography
-
-**Headings:** Use `font-display` (Instrument Serif)
-
-```typescript
-<h1 className="font-display text-3xl font-bold">Title</h1>
+**CTA button hover:**
+```css
+hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98]
 ```
 
-**Numbers:** Use `font-numbers` (Inter with tabular numbers)
-
-```typescript
-<span className="font-numbers text-2xl">RM150,000</span>
+**Feature icon hover:**
+```css
+group-hover:shadow-md group-hover:scale-105 transition-all duration-200
 ```
 
-**Body:** Default font (Urbanist)
-
-```typescript
-<p className="text-sm text-muted-foreground">Body text</p>
+**Ghost button:**
+```css
+hover:bg-muted/50 transition-colors duration-200
 ```
+
+---
 
 ## Icons
 
@@ -277,206 +358,52 @@ import { Card, CardContent } from '@/components/ui/card';
 ```typescript
 import { ArrowRight, Download, Question } from 'phosphor-react';
 
-<ArrowRight weight="duotone" className="h-4 w-4" />
+<ArrowRight weight="duotone" className="h-5 w-5" />
 ```
 
 **Always use `weight="duotone"`** for consistency.
 
 **Common icons:**
-- `ArrowRight`, `ArrowLeft` - Navigation
-- `Download` - Download actions
-- `Question` - Help/tooltips
-- `CheckCircle`, `WarningCircle` - Status
-- `Sparkle` - Highlights
 
-## Component Patterns
+| Icon | Usage |
+|------|-------|
+| `ArrowRight`, `ArrowLeft` | Navigation |
+| `Download` | Download actions |
+| `Question` | Help/tooltips |
+| `CheckCircle`, `WarningCircle` | Status |
+| `Sparkle` | Highlights |
+| `Calculator` | Calculator related |
+| `Heart` | Favorites |
 
-### Controlled Component
-
-```typescript
-interface ControlledInputProps {
-  value: string;
-  onChange: (value: string) => void;
-}
-
-export default function ControlledInput({
-  value,
-  onChange,
-}: ControlledInputProps) {
-  return (
-    <input
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    />
-  );
-}
-```
-
-### Composition
-
-```typescript
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-
-export default function MyCard({ title, children }) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {children}
-      </CardContent>
-    </Card>
-  );
-}
-```
-
-## Example: Creating a Custom Input
-
-**Scenario:** Need a currency input with validation
-
-**File:** `apps/web/src/components/CurrencyInput.tsx`
-
-```typescript
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-
-interface CurrencyInputProps {
-  label: string;
-  value: number;
-  onChange: (value: number) => void;
-  min?: number;
-  max?: number;
-  className?: string;
-}
-
-export default function CurrencyInput({
-  label,
-  value,
-  onChange,
-  min = 0,
-  max,
-  className,
-}: CurrencyInputProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const numValue = parseFloat(e.target.value) || 0;
-    const clamped = Math.max(min, max !== undefined ? Math.min(numValue, max) : numValue);
-    onChange(clamped);
-  };
-
-  return (
-    <div className={cn("space-y-2", className)}>
-      <Label>{label}</Label>
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-          RM
-        </span>
-        <Input
-          type="number"
-          value={value || ''}
-          onChange={handleChange}
-          min={min}
-          max={max}
-          className="pl-8"
-        />
-      </div>
-    </div>
-  );
-}
-```
-
-**Usage:**
-
-```typescript
-<CurrencyInput
-  label="Business Profit"
-  value={businessProfit}
-  onChange={setBusinessProfit}
-  min={0}
-  max={10000000}
-/>
-```
-
-## Testing Components
-
-**Manual testing:**
-1. Use the component in a page
-2. Test all props
-3. Test edge cases (empty, null, very large values)
-4. Test responsive behavior
-5. Test accessibility (keyboard navigation, screen reader)
-
-**Automated testing (if we add it):**
-```typescript
-import { render, screen } from '@testing-library/react';
-import CurrencyInput from '@/components/CurrencyInput';
-
-test('renders currency input', () => {
-  render(<CurrencyInput label="Profit" value={1000} onChange={() => {}} />);
-  expect(screen.getByLabelText('Profit')).toBeInTheDocument();
-});
-```
+---
 
 ## Common Mistakes
 
-### Mistake 1: Not Using TypeScript
+### Mistake 1: Wrong Touch Target
 
 **Wrong:**
 ```typescript
-export default function MyComponent(props) {
-  return <div>{props.title}</div>;
-}
+<button className="h-8 p-2">Small button</button>
 ```
 
 **Right:**
 ```typescript
-interface MyComponentProps {
-  title: string;
-}
-
-export default function MyComponent({ title }: MyComponentProps) {
-  return <div>{title}</div>;
-}
+<button className="min-h-[48px] py-3">Accessible button</button>
 ```
 
-### Mistake 2: Inline Styles
+### Mistake 2: Slow Animations
 
 **Wrong:**
 ```typescript
-<div style={{ color: 'red', fontSize: '16px' }}>
+transition={{ duration: 0.8, delay: 0.5 }}
 ```
 
 **Right:**
 ```typescript
-<div className="text-red-500 text-base">
+transition={{ duration: 0.3, delay: 0.02 }}
 ```
 
-### Mistake 3: Not Making It Responsive
-
-**Wrong:**
-```typescript
-<div className="w-64">Fixed width</div>
-```
-
-**Right:**
-```typescript
-<div className="w-full sm:w-64">Responsive width</div>
-```
-
-### Mistake 4: Missing Accessibility
-
-**Wrong:**
-```typescript
-<button><Icon /></button>
-```
-
-**Right:**
-```typescript
-<button aria-label="Close"><Icon /></button>
-```
-
-### Mistake 5: Not Using Theme Colors
+### Mistake 3: Not Using Theme Colors
 
 **Wrong:**
 ```typescript
@@ -488,35 +415,44 @@ export default function MyComponent({ title }: MyComponentProps) {
 <div className="text-foreground bg-background">
 ```
 
+### Mistake 4: Missing Hover States
+
+**Wrong:**
+```typescript
+<Card className="border">
+```
+
+**Right:**
+```typescript
+<Card className="border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+```
+
+---
+
 ## Component Checklist
 
 Before submitting:
 
 - [ ] TypeScript types defined
 - [ ] Uses TailwindCSS (no inline styles)
+- [ ] 48px minimum touch targets
 - [ ] Responsive (mobile + desktop)
 - [ ] Accessible (aria-labels, keyboard nav)
 - [ ] Uses theme colors
 - [ ] Uses shadcn/ui components (if applicable)
 - [ ] Uses `cn()` for className merging
+- [ ] Animations use 0.3s duration, 0.02s stagger
+- [ ] Hover states on interactive elements
 - [ ] Exported as default
 - [ ] File named PascalCase
-- [ ] Comments explain complex logic
+
+---
 
 ## Getting Help
 
 **Stuck?**
 1. Check existing components for examples
-2. Read shadcn/ui documentation
-3. Check TailwindCSS docs
-4. Ask in GitHub issues
-
-**Found a bug?**
-- Write a test that reproduces it
-- Fix the bug
-- Submit PR
-
----
-
-**Ready to add a component?** Follow the steps above, test thoroughly, and submit a PR. We'll review it and merge if it follows the patterns.
-
+2. Read the [Design System](../design-system.md)
+3. Check shadcn/ui documentation
+4. Check TailwindCSS docs
+5. Ask in GitHub issues

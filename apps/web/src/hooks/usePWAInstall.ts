@@ -111,11 +111,15 @@ export function usePWAInstall() {
   useEffect(() => {
     const dismissedAt = localStorage.getItem('pwa-install-dismissed-at');
     if (dismissedAt) {
-      const daysSinceDismissed = (Date.now() - parseInt(dismissedAt)) / (1000 * 60 * 60 * 24);
-      if (daysSinceDismissed > 7) {
-        localStorage.removeItem('pwa-install-dismissed');
-        localStorage.removeItem('pwa-install-dismissed-at');
-        setDismissed(false);
+      const timestamp = parseInt(dismissedAt, 10);
+      // Validate parseInt result before using
+      if (!isNaN(timestamp)) {
+        const daysSinceDismissed = (Date.now() - timestamp) / (1000 * 60 * 60 * 24);
+        if (daysSinceDismissed > 7) {
+          localStorage.removeItem('pwa-install-dismissed');
+          localStorage.removeItem('pwa-install-dismissed-at');
+          setDismissed(false);
+        }
       }
     }
   }, []);

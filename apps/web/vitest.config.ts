@@ -13,33 +13,15 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    projects: [{
-      extends: true,
-      plugins: [
-      // The plugin will run tests for the stories defined in your Storybook config
-      // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
-      storybookTest({
-        configDir: path.join(dirname, '.storybook')
-      })],
-      test: {
-        name: 'storybook',
-        browser: {
-          enabled: true,
-          headless: true,
-          provider: playwright({}),
-          instances: [{
-            browser: 'chromium'
-          }]
-        },
-        setupFiles: ['.storybook/vitest.setup.ts']
-      }
-    }]
+    // Exclude storybook tests from default test run
+    exclude: ['**/*.stories.tsx', '**/node_modules/**'],
+    include: ['src/**/*.test.{ts,tsx}'],
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@tax-engine/core': path.resolve(__dirname, '../../packages/core'),
-      '@tax-engine/config': path.resolve(__dirname, '../../packages/config')
+      '@': path.resolve(dirname, './src'),
+      '@tax-engine/core': path.resolve(dirname, '../../packages/core'),
+      '@tax-engine/config': path.resolve(dirname, '../../packages/config')
     }
   }
 });

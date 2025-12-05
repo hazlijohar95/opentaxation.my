@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { SignOut, User } from 'phosphor-react';
+import { SignOut, User, SignIn } from 'phosphor-react';
 
 export function UserMenu() {
   const { user, signOut } = useAuth();
@@ -20,7 +21,17 @@ export function UserMenu() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (!user) return null;
+  // Show sign-in button for guests
+  if (!user) {
+    return (
+      <Link to="/login">
+        <Button variant="ghost" size="sm" className="h-9 gap-1.5">
+          <SignIn weight="bold" className="h-4 w-4" />
+          <span className="hidden sm:inline text-xs">Sign In</span>
+        </Button>
+      </Link>
+    );
+  }
 
   const userImage = user.user_metadata?.avatar_url || user.user_metadata?.picture;
   const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0];

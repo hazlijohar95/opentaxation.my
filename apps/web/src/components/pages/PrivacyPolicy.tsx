@@ -94,8 +94,8 @@ export default function PrivacyPolicy() {
               <p>
                 If you have questions about this Privacy Policy, please contact us at:
                 <br />
-                <a href="mailto:hello@opentaxation.my" className="text-[var(--blue)] hover:underline">
-                  hello@opentaxation.my
+                <a href="mailto:coding@hazli.dev" className="text-primary hover:underline">
+                  coding@hazli.dev
                 </a>
               </p>
             </section>

@@ -10,13 +10,28 @@ import type { TaxCalculationInputs, SolePropScenarioResult, WaterfallStep, TaxBr
 /**
  * Calculate Sole Proprietorship / Enterprise scenario
  *
- * Net cash now includes ALL income (business + other) minus tax,
- * for fair comparison with Sdn Bhd scenario.
+ * ## Cash Flow Formula
+ * ```
+ * Total Income = Business Profit + Other Income
+ * Taxable Income = Total Income - Personal Reliefs
+ * Personal Tax = Progressive rate on Taxable Income (0-30% across 10 brackets)
+ * Final Tax = Personal Tax - Zakat Rebate (if applicable)
+ * Net Cash = Total Income - Final Tax - Zakat Paid
+ * ```
  *
- * Zakat Treatment (Enterprise/Individual):
+ * ## Effective Tax Rate
+ * ```
+ * Effective Rate = Final Tax / Total Income
+ * ```
+ *
+ * ## Zakat Treatment (Enterprise/Individual)
  * - Zakat is a 100% TAX REBATE (direct reduction from tax payable)
  * - Capped at the tax amount itself (cannot create negative tax)
+ * - Excess zakat over tax payable is reported but provides no additional tax benefit
  * - Reference: Section 6A(3) Income Tax Act 1967
+ *
+ * @param inputs - Business profit, other income, reliefs, and zakat settings
+ * @returns Complete Sole Prop scenario results with tax breakdown
  */
 export function calculateSolePropScenario(
   inputs: Pick<TaxCalculationInputs, 'businessProfit' | 'otherIncome' | 'reliefs' | 'zakat'>

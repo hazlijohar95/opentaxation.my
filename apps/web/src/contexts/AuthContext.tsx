@@ -8,6 +8,7 @@ interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   isConfigured: boolean;
+  isBlogAdmin: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -18,6 +19,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isBlogAdmin, setIsBlogAdmin] = useState(false);
+
+  // Check if user is a blog admin (exists in blog_authors table)
+  // Note: User-to-author linking is handled by SQL trigger (link_user_to_author)
+  const checkBlogAdmin = async (userId: string | undefined, email: string | undefined) => {
+    if (!supabase || (!userId && !email)) {
+      setIsBlogAdmin(false);
+      return;
+    }
+
+    try {
+      // Check by user_id first, then by email as fallback
+      let query = supabase
+        .from('blog_authors')
+        .select('id, user_id')
+        .eq('is_active', true);
+
+      if (userId && email) {
+        query = query.or(`user_id.eq.${userId},email.eq.${email}`);
+      } else if (userId) {
+        query = query.eq('user_id', userId);
+      } else if (email) {
+        query = query.eq('email', email);
+      }
+
+      const { data, error } = await query.single();
+
+      if (error && error.code !== 'PGRST116') {
+        // Log real errors, not "not found"
+        console.error('[AuthContext] Error checking blog admin:', error);
+      }
+
+      setIsBlogAdmin(!!data);
+    } catch (err) {
+      console.error('[AuthContext] Unexpected error checking blog admin:', err);
+      setIsBlogAdmin(false);
+    }
+  };
 
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) {
@@ -29,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      checkBlogAdmin(session?.user?.id, session?.user?.email);
       setIsLoading(false);
     });
 
@@ -38,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      checkBlogAdmin(session?.user?.id, session?.user?.email);
       setIsLoading(false);
     });
 
@@ -80,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         isLoading,
         isConfigured: isSupabaseConfigured,
+        isBlogAdmin,
         signInWithGoogle,
         signOut,
       }}

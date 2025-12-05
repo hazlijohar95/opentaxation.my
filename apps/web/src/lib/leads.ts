@@ -1,6 +1,23 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import type { Database, Json } from '@/types/database';
 
+// ============================================
+// CONSTANTS
+// ============================================
+
+/** PostgreSQL unique constraint violation error code */
+const PGSQL_UNIQUE_VIOLATION = '23505';
+
+/** PostgREST not found error code */
+const PGRST_NOT_FOUND = 'PGRST116';
+
+/** Email validation regex */
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// ============================================
+// TYPES
+// ============================================
+
 type LeadType = Database['public']['Tables']['leads']['Row']['lead_type'];
 type LeadStatus = Database['public']['Tables']['leads']['Row']['status'];
 
@@ -39,10 +56,14 @@ export interface Lead {
  * Create a new lead in the database
  */
 export async function createLead(params: CreateLeadParams): Promise<{ success: boolean; error?: string }> {
-  // If Supabase isn't configured, just log and return success
+  // Validate email format
+  if (!EMAIL_REGEX.test(params.email)) {
+    return { success: false, error: 'Please enter a valid email address' };
+  }
+
+  // If Supabase isn't configured, return success silently
   // This allows the CTA to work in development without a database
   if (!isSupabaseConfigured || !supabase) {
-    console.log('[Leads] Supabase not configured. Lead would be captured:', params);
     return { success: true };
   }
 
@@ -58,8 +79,7 @@ export async function createLead(params: CreateLeadParams): Promise<{ success: b
 
     if (error) {
       // Handle duplicate email gracefully
-      if (error.code === '23505') {
-        // Unique constraint violation - email already exists
+      if (error.code === PGSQL_UNIQUE_VIOLATION) {
         return { success: true }; // Treat as success, user is already in system
       }
       console.error('[Leads] Error creating lead:', error);
@@ -88,8 +108,7 @@ export async function checkLeadExists(email: string): Promise<boolean> {
       .eq('email', email)
       .single();
 
-    if (error && error.code !== 'PGRST116') {
-      // PGRST116 is "not found" which is expected
+    if (error && error.code !== PGRST_NOT_FOUND) {
       console.error('[Leads] Error checking lead:', error);
     }
 

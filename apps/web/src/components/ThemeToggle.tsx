@@ -4,36 +4,21 @@ import { useTheme } from '@/contexts/ThemeContext';
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
 
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
+  };
+
   return (
-    <div className="flex items-center gap-0.5 p-1 bg-muted/50 rounded-lg border border-border/30">
-      <button
-        onClick={() => setTheme('light')}
-        className={`p-1.5 rounded-md transition-all duration-300 ${
-          resolvedTheme === 'light'
-            ? 'bg-background text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-[var(--blue)]'
-        }`}
-        aria-label="Switch to light mode"
-      >
-        <Sun
-          weight={resolvedTheme === 'light' ? 'fill' : 'regular'}
-          className="h-4 w-4"
-        />
-      </button>
-      <button
-        onClick={() => setTheme('dark')}
-        className={`p-1.5 rounded-md transition-all duration-300 ${
-          resolvedTheme === 'dark'
-            ? 'bg-background text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-[var(--blue)]'
-        }`}
-        aria-label="Switch to dark mode"
-      >
-        <Moon
-          weight={resolvedTheme === 'dark' ? 'fill' : 'regular'}
-          className="h-4 w-4"
-        />
-      </button>
-    </div>
+    <button
+      onClick={toggleTheme}
+      className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 touch-target"
+      aria-label={resolvedTheme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+    >
+      {resolvedTheme === 'light' ? (
+        <Moon weight="duotone" className="h-5 w-5" />
+      ) : (
+        <Sun weight="duotone" className="h-5 w-5" />
+      )}
+    </button>
   );
 }

@@ -1,6 +1,8 @@
 # Your First Calculation
 
-Let's calculate tax for a fictional business. Because real businesses have real problems, and we don't want those.
+Let's calculate tax for a fictional business.
+
+---
 
 ## The Scenario
 
@@ -11,6 +13,8 @@ Meet **Ahmad's Tech Services**:
 
 This is a realistic scenario. RM150k profit is common for small Malaysian businesses.
 
+---
+
 ## Step-by-Step Walkthrough
 
 ### Step 1: Open the App
@@ -20,169 +24,242 @@ If you haven't already:
 npm run dev
 ```
 
-Open `http://localhost:3000` in your browser.
+Open `http://localhost:5173` in your browser.
 
-### Step 2: Enter Business Details
+### Step 2: Get to the Calculator
 
-On the input form (left side), enter:
+Click **"Get Started"** on the landing page. This scrolls to the calculator section.
+
+**On Desktop:** You'll see a two-column layout:
+- Left: Input form
+- Right: Results
+
+**On Mobile:** You'll see a tab-based layout:
+- Bottom tabs to switch between "Inputs" and "Results"
+- Swipe or tap to navigate
+
+### Step 3: Enter Business Details
 
 **Business Income:**
-- **Annual business profit**: `150000`
-- **Other income**: `0`
 
-**If Sdn Bhd:**
-- **Monthly salary**: `5000` (RM5k/month = RM60k/year)
-- **Annual compliance cost**: `5000` (typical for small companies)
+| Field | Value | Notes |
+|-------|-------|-------|
+| Annual business profit | `150,000` | Your gross profit |
+| Other income | `0` | Side income, if any |
 
-**Audit Exemption:**
-- **Revenue**: `150000` (same as profit for simplicity)
-- **Assets**: `200000` (reasonable for a small business)
-- **Employees**: `2` (Ahmad + 1 employee)
+**Sdn Bhd Settings:**
+
+| Field | Value | Notes |
+|-------|-------|-------|
+| Monthly salary | `5,000` | RM5k/month = RM60k/year |
+| Compliance cost | `5,000` | Company secretary, SSM fees |
+
+**Audit Status:**
+
+| Field | Value | Notes |
+|-------|-------|-------|
+| Revenue | `150,000` | Same as profit for simplicity |
+| Assets | `200,000` | Reasonable for small business |
+| Employees | `2` | Ahmad + 1 employee |
 
 Since revenue (RM150k) > RM100k, audit is **required**. Enter:
-- **Audit cost**: `5000` (typical audit fee)
+- **Audit cost**: `5,000` (typical audit fee)
 
-### Step 3: Watch the Magic
+### Step 4: Watch the Magic
 
-Results appear instantly on the right side. No button to click - it's live calculation.
+Results appear instantly. No button to click - it's live calculation.
 
 **What you should see:**
 
-**Enterprise (Sole Prop) Card:**
-- Personal tax: Around RM15,000-20,000 (depends on reliefs)
-- Net cash: Around RM130,000-135,000
+**Enterprise Card (Blue border):**
+- Personal tax: ~RM15,000-20,000
+- Net cash: ~RM130,000-135,000
+- Effective tax rate: ~10-13%
 
-**Sdn Bhd Card:**
-- Company tax: Around RM13,500-15,000
-- Personal tax: Around RM5,000-8,000
-- Total compliance cost: RM10,000 (RM5k compliance + RM5k audit)
-- Net cash: Around RM120,000-125,000
+**Sdn Bhd Card (Emerald border):**
+- Company tax: ~RM12,000-15,000
+- Personal tax: ~RM4,000-6,000
+- Compliance costs: RM10,000
+- Net cash: ~RM120,000-125,000
 
-**Recommendation:**
-Probably "Stay as Enterprise" - saves around RM5,000-10,000 per year.
+**Recommendation Card:**
+- Probably shows "Stay as Enterprise"
+- Savings: ~RM5,000-10,000 per year
 
-### Step 4: Understand the Results
+### Step 5: Understand the Results
 
 **Why Enterprise wins here?**
 
-1. **Lower compliance costs**: No audit needed (if you qualify), no company secretary fees
+1. **Lower compliance costs**: No audit fees, no company secretary
 2. **Simpler structure**: Less paperwork, less hassle
-3. **RM150k profit**: Not high enough for corporate tax benefits to outweigh costs
+3. **RM150k profit**: Not high enough for corporate tax benefits
 
 **When would Sdn Bhd win?**
 
 - Higher profit (RM300k+)
 - Need for limited liability
-- Want to pay yourself a salary (EPF benefits)
+- Want EPF benefits from salary
 - Planning to scale or get investors
 
-### Step 5: Try Different Scenarios
+### Step 6: Explore Advanced Options
 
-**Scenario A: Higher Profit**
-- Change profit to `300000`
-- Now Sdn Bhd might win (lower corporate tax rate kicks in)
+Toggle **"Advanced"** to see more options:
 
-**Scenario B: Lower Compliance Costs**
-- Change compliance cost to `3000`
-- Change audit cost to `0` (if you qualify for exemption)
+**Dividend Settings:**
+- Distribution percentage (default 100%)
+- YA 2025 dividend surcharge toggle
+
+**Zakat Section:**
+- Enable Zakat calculation
+- See how Zakat offsets tax
+
+**Tax Reliefs:**
+- Expand to customize reliefs
+- Default is RM24,000
+
+---
+
+## Try Different Scenarios
+
+### Scenario A: Higher Profit
+
+Change profit to `300,000`:
+- Sdn Bhd becomes more competitive
+- Corporate tax rate benefits kick in
+- Watch the crossover chart
+
+### Scenario B: Lower Compliance Costs
+
+- Set compliance cost to `3,000`
+- Set audit cost to `0` (if exempted)
 - Sdn Bhd becomes more attractive
 
-**Scenario C: Higher Salary**
-- Change monthly salary to `10000`
-- More EPF contributions, but also more personal tax
-- See how it affects the comparison
+### Scenario C: Target Net Income Mode
 
-## Expected Output Explained
+Toggle to "Target Mode":
+- Enter your desired net income
+- Calculator figures out required profit
+- Useful for planning
 
-### Enterprise Scenario
+### Scenario D: With Zakat
 
-**Calculation:**
-1. Total income = Business profit + Other income = RM150,000
-2. Minus reliefs (default RM24,000) = RM126,000 taxable income
-3. Personal tax calculated using progressive brackets
-4. Net cash = Profit - Tax
+Enable Zakat in Advanced settings:
+- See Zakat amount calculated
+- Watch how it offsets personal tax
+- Compare both scenarios with Zakat
 
-**Breakdown:**
-- Tax brackets: 0-5k (0%), 5-20k (1%), 20-35k (3%), 35-50k (6%), 50-70k (11%), 70-100k (19%), 100-250k (25%)
-- Tax on RM126k ≈ RM18,000-20,000
-- Net cash ≈ RM130,000-132,000
+---
 
-### Sdn Bhd Scenario
+## Understanding the Waterfall Breakdown
 
-**Calculation:**
-1. Company pays you salary: RM60,000/year
-2. Employer EPF (13% of RM60k): RM7,800
-3. Company taxable profit = RM150,000 - RM60,000 - RM7,800 = RM82,200
-4. Company tax (15% on first RM150k): RM12,330
-5. Post-tax profit: RM69,870
-6. Dividends: RM69,870 (assumed fully distributed)
-7. Dividend tax: RM0 (under RM100k threshold)
-8. You pay personal tax on salary: RM60,000 - reliefs = RM36,000 taxable → ~RM4,000 tax
-9. Compliance costs: RM10,000 (RM5k compliance + RM5k audit)
-10. Net cash = Salary after EPF + Dividends - Personal tax - Compliance = ~RM120,000-125,000
+Click **"Show breakdown"** on any tax card to see the waterfall:
 
-**Why it's lower:**
-- Compliance costs eat into savings
-- Audit requirement adds cost
-- At RM150k profit, corporate tax benefits don't outweigh costs
+**Enterprise Waterfall:**
+```
+Starting Profit        RM150,000
+- Tax Reliefs          -RM24,000
+= Taxable Income       RM126,000
+- Personal Tax         -RM18,000
+= Net Cash             RM132,000
+```
 
-## Now Try Breaking It
+**Sdn Bhd Waterfall (Two levels):**
 
-**Edge Cases to Test:**
+Company Level:
+```
+Starting Profit        RM150,000
+- Director Salary      -RM60,000
+- Employer EPF         -RM7,800
+= Taxable Profit       RM82,200
+- Corporate Tax        -RM12,330
+= After-Tax Profit     RM69,870
+```
 
-1. **Zero profit**: Enter `0` - should show no tax, but still calculate
-2. **Negative numbers**: Try `-1000` - should be prevented or handled
-3. **Very high profit**: Try `1000000` - see how brackets work
-4. **No salary**: Set salary to `0` - Sdn Bhd scenario breaks (as it should)
-5. **Extreme compliance costs**: Set to `50000` - Enterprise always wins
+Personal Level:
+```
+Salary Received        RM60,000
++ Dividends            RM69,870
+- Tax Reliefs          -RM24,000
+= Taxable Income       RM105,870
+- Personal Tax         -RM8,000
+- Compliance Costs     -RM10,000
+= Net Cash             RM121,870
+```
 
-**What breaks?**
-- Negative numbers should be prevented (input validation)
-- Zero salary in Sdn Bhd doesn't make sense (should warn)
-- Very high numbers might cause precision issues (but should work)
+---
 
 ## Understanding the Crossover Chart
 
 Scroll down to see the **Crossover Analysis** chart.
 
 **What it shows:**
-- X-axis: Business profit (RM0 to RM200k+)
+- X-axis: Business profit (RM0 to RM500k+)
 - Y-axis: Net cash after tax
-- Two lines: Enterprise (black) vs Sdn Bhd (gray)
+- Two lines: Enterprise vs Sdn Bhd
 
 **The crossover point** is where both lines meet - that's the profit level where both structures are equal.
 
 **For Ahmad's scenario:**
 - At RM150k: Enterprise wins
-- Crossover point: Probably around RM200k-250k
+- Crossover point: ~RM200k-250k
 - Above crossover: Sdn Bhd wins
+
+---
+
+## Mobile Experience
+
+On mobile, the experience is optimized:
+
+**Bottom Navigation:**
+- **Inputs** tab: All input fields
+- **Results** tab: Tax cards and charts
+
+**Features:**
+- Pull down to see header
+- Results badge shows when new results available
+- Tap tabs or swipe to navigate
+
+**Install as PWA:**
+1. Tap Share → "Add to Home Screen"
+2. Launch for app-like experience
+3. Works offline
+
+---
 
 ## Common Mistakes
 
-**Mistake 1: Forgetting Audit Costs**
+### Mistake 1: Forgetting Audit Costs
+
 - If you qualify for audit exemption, set audit cost to `0`
 - If you don't, include audit fees (RM3k-8k typical)
 
-**Mistake 2: Unrealistic Salary**
-- Salary can't exceed 80% of profit (validation should catch this)
+### Mistake 2: Unrealistic Salary
+
+- Salary can't exceed profit
 - Too high salary = less company profit = less dividends
 
-**Mistake 3: Ignoring Compliance Costs**
-- Sdn Bhd has real costs: company secretary, SSM fees, tax agent
-- RM3k-15k is realistic range
+### Mistake 3: Ignoring Compliance Costs
 
-**Mistake 4: Not Considering Reliefs**
+Sdn Bhd has real costs:
+- Company secretary: RM1k-3k
+- SSM annual return: RM200-500
+- Tax agent: RM2k-5k
+- Audit (if required): RM3k-8k
+
+### Mistake 4: Not Considering Reliefs
+
 - Default reliefs are RM24k
-- If you have spouse/kids, add more reliefs
-- More reliefs = less tax = Enterprise becomes more attractive
+- If you have spouse/kids, add more
+- More reliefs = less tax = Enterprise more attractive
+
+---
 
 ## What's Next?
 
 - [How Tax Calculations Work](../concepts/tax-calculations.md) - Deep dive into the math
 - [Architecture Overview](../concepts/architecture.md) - How the code works
-- [API Reference](../api/core-package.md) - Use the calculation functions directly
+- [API Reference](../api/core-package.md) - Use calculation functions directly
 
 ---
 
 **Questions?** The calculations are open source. Read the code, understand it, and if you find bugs, let us know!
-

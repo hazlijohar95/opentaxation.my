@@ -329,7 +329,7 @@ function PartnersPage() {
                 We verify all partners to ensure quality service.
               </p>
               <a
-                href="mailto:partners@opentaxation.my?subject=Partner%20Inquiry"
+                href="mailto:coding@hazli.dev?subject=Partner%20Inquiry"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
               >
                 Become a Partner

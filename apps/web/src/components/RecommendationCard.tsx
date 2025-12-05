@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -10,6 +11,7 @@ interface RecommendationCardProps {
 }
 
 export default function RecommendationCard({ comparison }: RecommendationCardProps) {
+  const { t } = useTranslation();
   const { whichIsBetter, savingsIfSwitch, recommendation, hasAffordabilityIssue, hasSmeQualificationIssue, warnings } = comparison;
 
   const isSdnBhdBetter = whichIsBetter === 'sdnBhd';
@@ -23,29 +25,29 @@ export default function RecommendationCard({ comparison }: RecommendationCardPro
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className={`border-2 shadow-lg transition-all duration-300 active:scale-[0.99] ${
-        hasWarnings ? 'border-amber-500/50 bg-amber-500/5' :
-        isSdnBhdBetter ? 'border-foreground/20 bg-foreground/5' :
-        isSolePropBetter ? 'border-foreground/20 bg-foreground/5' :
-        'border-border/50 bg-muted/20'
+      <Card className={`border-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 ${
+        hasWarnings ? 'border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10' :
+        isSdnBhdBetter ? 'border-emerald-500/40 bg-gradient-to-br from-emerald-500/5 to-emerald-500/10' :
+        isSolePropBetter ? 'border-blue-500/40 bg-gradient-to-br from-blue-500/5 to-blue-500/10' :
+        'border-border/50 bg-card'
       }`}>
         {/* Warnings Banner */}
         {hasWarnings && (
-          <div className="bg-amber-500/10 border-b border-amber-500/30 px-5 py-3 sm:px-6">
+          <div className="bg-destructive/10 border-b border-destructive/20 px-5 py-3 sm:px-6">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">
-                <Warning weight="duotone" className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <Warning weight="duotone" className="h-5 w-5 text-destructive" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                <p className="text-sm font-medium text-destructive">
                   {hasAffordabilityIssue
-                    ? 'Salary Exceeds Company Capacity'
+                    ? t('recommendation.salaryExceeds')
                     : hasSmeQualificationIssue
-                    ? 'SME Tax Rates May Not Apply'
-                    : 'Important Notice'}
+                    ? t('recommendation.smeNotApply')
+                    : t('recommendation.importantNotice')}
                 </p>
                 {warnings.map((warning, index) => (
-                  <p key={`warning-${warning.slice(0, 20).replace(/\s+/g, '-')}-${index}`} className="text-xs text-amber-700/80 dark:text-amber-400/80 mt-1 leading-relaxed">
+                  <p key={`warning-${warning.slice(0, 20).replace(/\s+/g, '-')}-${index}`} className="text-xs text-destructive/80 mt-1 leading-relaxed">
                     {warning}
                   </p>
                 ))}
@@ -62,8 +64,8 @@ export default function RecommendationCard({ comparison }: RecommendationCardPro
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15 }}
               >
-                <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center">
-                  <ArrowRight weight="duotone" className="h-5 w-5 text-foreground" />
+                <div className="w-12 h-12 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shadow-sm">
+                  <ArrowRight weight="duotone" className="h-6 w-6 text-emerald-600" />
                 </div>
               </motion.div>
             )}
@@ -73,42 +75,42 @@ export default function RecommendationCard({ comparison }: RecommendationCardPro
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15 }}
               >
-                <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center">
-                  <ArrowLeft weight="duotone" className="h-5 w-5 text-foreground" />
+                <div className="w-12 h-12 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center shadow-sm">
+                  <ArrowLeft weight="duotone" className="h-6 w-6 text-blue-600" />
                 </div>
               </motion.div>
             )}
             {isSimilar && (
-              <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center">
-                <Minus weight="duotone" className="h-5 w-5 text-muted-foreground" />
+              <div className="w-12 h-12 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center">
+                <Minus weight="duotone" className="h-6 w-6 text-muted-foreground" />
               </div>
             )}
           </div>
 
           <Badge
             className={`text-sm font-semibold px-4 py-2 rounded-full transition-all duration-200 ${
-              isSdnBhdBetter ? 'bg-[var(--blue)] text-[hsl(var(--blue-foreground))] shadow-md' :
-              isSolePropBetter ? 'bg-[var(--blue)] text-[hsl(var(--blue-foreground))] shadow-md' :
+              isSdnBhdBetter ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/25' :
+              isSolePropBetter ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25' :
               'bg-muted text-muted-foreground'
             }`}
           >
-            {isSdnBhdBetter && 'Switch to Sdn Bhd'}
-            {isSolePropBetter && 'Stay as Enterprise'}
-            {isSimilar && 'Both structures similar'}
+            {isSdnBhdBetter && t('recommendation.switchToSdnBhd')}
+            {isSolePropBetter && t('recommendation.stayEnterprise')}
+            {isSimilar && t('recommendation.bothSimilar')}
           </Badge>
 
           <div className="space-y-2">
             {isSimilar ? (
               <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                Too close to call
+                {t('recommendation.tooClose')}
               </h2>
             ) : (
               <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                Save{' '}
+                {t('recommendation.save')}{' '}
                 <span className="font-numbers text-foreground">
                   RM{savingsIfSwitch.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
-                <span className="text-muted-foreground text-xl sm:text-2xl font-normal"> per year</span>
+                <span className="text-muted-foreground text-xl sm:text-2xl font-normal"> {t('recommendation.perYear')}</span>
               </h2>
             )}
           </div>
@@ -128,7 +130,7 @@ export default function RecommendationCard({ comparison }: RecommendationCardPro
             >
               <Sparkle weight="duotone" className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="text-xs text-muted-foreground">
-                Based on your current inputs
+                {t('recommendation.basedOnInputs')}
               </span>
             </motion.div>
           )}

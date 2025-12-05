@@ -3,30 +3,17 @@ import { useLanguage } from '@/i18n/LanguageContext';
 export function LanguageToggle() {
   const { language, setLanguage } = useLanguage();
 
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'ms' : 'en');
+  };
+
   return (
-    <div className="flex items-center gap-0.5 p-1 bg-muted/50 rounded-lg border border-border/30">
-      <button
-        onClick={() => setLanguage('en')}
-        className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 ${
-          language === 'en'
-            ? 'bg-background text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-[var(--blue)]'
-        }`}
-        aria-label="Switch to English"
-      >
-        EN
-      </button>
-      <button
-        onClick={() => setLanguage('ms')}
-        className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-300 ${
-          language === 'ms'
-            ? 'bg-background text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-[var(--blue)]'
-        }`}
-        aria-label="Tukar ke Bahasa Melayu"
-      >
-        BM
-      </button>
-    </div>
+    <button
+      onClick={toggleLanguage}
+      className="px-2.5 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 touch-target"
+      aria-label={language === 'en' ? 'Tukar ke Bahasa Melayu' : 'Switch to English'}
+    >
+      {language === 'en' ? 'BM' : 'EN'}
+    </button>
   );
 }

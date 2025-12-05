@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { InputMode, ZakatInput } from '@tax-engine/core';
 
 /**
@@ -12,6 +12,9 @@ export function useLocalStorage<T>(
   key: string,
   initialValue: T
 ): [T, (value: T | ((prev: T) => T)) => void, () => void] {
+  // Use ref to store initialValue to avoid dependency issues with objects
+  const initialValueRef = useRef(initialValue);
+
   // Get stored value or use initial value
   const [storedValue, setStoredValue] = useState<T>(() => {
     if (typeof window === 'undefined') {
@@ -40,7 +43,7 @@ export function useLocalStorage<T>(
     }
   }, [key, storedValue]);
 
-  // Clear stored value
+  // Clear stored value - use ref to avoid dependency on initialValue object
   const clearValue = useCallback(() => {
     if (typeof window === 'undefined') {
       return;
@@ -48,11 +51,11 @@ export function useLocalStorage<T>(
 
     try {
       window.localStorage.removeItem(key);
-      setStoredValue(initialValue);
+      setStoredValue(initialValueRef.current);
     } catch (error) {
       console.warn(`Error clearing localStorage key "${key}":`, error);
     }
-  }, [key, initialValue]);
+  }, [key]);
 
   return [storedValue, setStoredValue, clearValue];
 }

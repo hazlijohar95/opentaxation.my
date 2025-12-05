@@ -66,7 +66,7 @@ function MobileBottomTabs({ activeTab, onTabChange, hasResults = false }: Mobile
 
               {/* Label */}
               <span
-                className={`text-[10px] font-medium tracking-tight transition-colors duration-200 ${
+                className={`text-[11px] font-medium tracking-tight transition-colors duration-200 ${
                   isActive ? 'text-primary' : 'text-muted-foreground'
                 }`}
                 style={{ letterSpacing: '-0.02em' }}

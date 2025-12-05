@@ -1,5 +1,6 @@
 import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { TooltipProvider } from './components/ui/tooltip';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
@@ -17,6 +18,14 @@ const DashboardCalendar = lazy(() => import('./pages/dashboard/DashboardCalendar
 const SavedCalculations = lazy(() => import('./pages/dashboard/SavedCalculations'));
 const DashboardSettings = lazy(() => import('./pages/dashboard/DashboardSettings'));
 const PartnersPage = lazy(() => import('./pages/PartnersPage'));
+
+// Blog routes
+const BlogListPage = lazy(() => import('./pages/blog/BlogListPage'));
+const BlogPostPage = lazy(() => import('./pages/blog/BlogPostPage'));
+
+// Blog admin routes
+const BlogAdminList = lazy(() => import('./pages/dashboard/blog/BlogAdminList'));
+const BlogAdminEdit = lazy(() => import('./pages/dashboard/blog/BlogAdminEdit'));
 
 // Loading fallback for lazy routes
 function RouteLoading() {
@@ -45,12 +54,18 @@ function AppRoutes() {
         <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/partners" element={<PartnersPage />} />
 
+        {/* Blog routes */}
+        <Route path="/blog" element={<BlogListPage />} />
+        <Route path="/blog/:slug" element={<BlogPostPage />} />
+
         {/* Dashboard routes (protected) */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardOverview />} />
           <Route path="calendar" element={<DashboardCalendar />} />
           <Route path="calculations" element={<SavedCalculations />} />
           <Route path="settings" element={<DashboardSettings />} />
+          <Route path="blog" element={<BlogAdminList />} />
+          <Route path="blog/:id" element={<BlogAdminEdit />} />
         </Route>
       </Routes>
     </Suspense>
@@ -60,10 +75,12 @@ function AppRoutes() {
 function App() {
   return (
     <ErrorBoundary>
-      <TooltipProvider>
-        <AppRoutes />
-        <PWAInstallPrompt />
-      </TooltipProvider>
+      <HelmetProvider>
+        <TooltipProvider>
+          <AppRoutes />
+          <PWAInstallPrompt />
+        </TooltipProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   );
 }

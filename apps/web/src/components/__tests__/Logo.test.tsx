@@ -5,16 +5,19 @@ import Logo from '../Logo';
 describe('Logo', () => {
   it('renders the logo text', () => {
     render(<Logo />);
-    expect(screen.getByText('Open-Corporation')).toBeInTheDocument();
-    expect(screen.getByText('.com')).toBeInTheDocument();
+    expect(screen.getByText('open')).toBeInTheDocument();
+    expect(screen.getByText('taxation')).toBeInTheDocument();
+    expect(screen.getByText('.my')).toBeInTheDocument();
   });
 
   it('applies size classes correctly', () => {
-    const { rerender } = render(<Logo size="sm" />);
-    expect(screen.getByText('Open-Corporation').closest('span')).toHaveClass('text-xl');
+    const { rerender, container } = render(<Logo size="sm" />);
+    // Default/sm uses text-lg sm:text-xl classes
+    expect(container.querySelector('a')).toHaveClass('text-lg');
 
     rerender(<Logo size="lg" />);
-    expect(screen.getByText('Open-Corporation').closest('span')).toHaveClass('text-5xl');
+    // lg size uses text-3xl sm:text-4xl classes
+    expect(container.querySelector('a')).toHaveClass('text-3xl');
   });
 });
 
